@@ -90,7 +90,7 @@ export class ProjectObserser {
         return this.fileObserver.walk()
             .then(changedFiles => {
                 var zip = archiver('zip')
-                var streamBuffer = new streamBuffers.WritableStreamBuffer();
+                var streamBuffer: any = new streamBuffers.WritableStreamBuffer();
                 zip.pipe(streamBuffer);
                 changedFiles.forEach(relativePath => {
                     zip.append(fs.createReadStream(path.join(this.folder, relativePath)), { name: relativePath })
@@ -116,7 +116,7 @@ export class ProjectObserser {
         return new Promise<{ buffer: Buffer, md5: string }>((res, rej) => {
             var walker = walk.walk(this.folder);
             var zip = archiver('zip')
-            var streamBuffer = new streamBuffers.WritableStreamBuffer();
+            var streamBuffer: any = new streamBuffers.WritableStreamBuffer();
             zip.pipe(streamBuffer);
             walker.on("file", (root, stat, next) => {
                 var filePath = path.join(root, stat.name);

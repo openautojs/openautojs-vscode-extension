@@ -1,9 +1,9 @@
 {
-  "name": "auto-js-vscodeext",
-  "displayName": "Auto.js-VSCodeExt",
-  "description": "Just a simple development plugin for Android app Auto.js",
-  "version": "0.2.1",
-  "publisher": "hyb1996",
+  "name": "auto-js-vscodeext-webpack",
+  "displayName": "Auto.js-VSCodeExt-Webpack",
+  "description": "Just a simple development plugin for Android app Auto.js. Speed up for Synchronize File",
+  "version": "0.3.0",
+  "publisher": "710850609",
   "repository": {
     "type": "github",
     "url": "https://github.com/hyb1996/Auto.js-VSCode-Extension"
