@@ -1,12 +1,12 @@
 {
-  "name": "auto-js-vscodeext-webpack",
-  "displayName": "Auto.js-VSCodeExt-Webpack",
-  "description": "Just a simple development plugin for Android app Auto.js. Speed up for Synchronize File",
+  "name": "auto-js-vscodeext-fixed",
+  "displayName": "Auto.js-VSCodeExt-Fixed",
+  "description": "基于Auto.js-VSCode-Extension，优化了项目传输速度、支持直接在output面板查看执行记录",
   "version": "0.3.0",
   "publisher": "710850609",
   "repository": {
     "type": "github",
-    "url": "https://github.com/hyb1996/Auto.js-VSCode-Extension"
+    "url": "https://github.com/710850609/Auto.js-VSCode-Extension"
   },
   "engines": {
     "vscode": "^1.17.0"
@@ -122,7 +122,10 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    "test": "npm run compile && node ./node_modules/vscode/bin/test",
+    "install": "npm install",
+    "package": "vsce package",
+    "publish": "vsce publish"
   },
   "devDependencies": {
     "typescript": "^2.5.3",
