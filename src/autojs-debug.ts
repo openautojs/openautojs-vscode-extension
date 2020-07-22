@@ -6,6 +6,7 @@ import * as http from 'http'
 import * as fs from 'fs'
 import * as jszip from 'jszip'
 import { Project, ProjectObserser } from './project';
+import * as vscode from "vscode";
 
 const DEBUG = false;
 
@@ -113,6 +114,7 @@ export class AutoJsDebugServer extends EventEmitter {
     private port: number;
     public devices: Array<Device> = [];
     public project: Project = null;
+    private logChannels: Map<string, vscode.OutputChannel>;
     private fileFilter = (relativePath: string, absPath: string, stats: fs.Stats)=>{
         if(!this.project){
             return true;
@@ -122,6 +124,7 @@ export class AutoJsDebugServer extends EventEmitter {
 
     constructor(port: number) {
         super();
+        this.logChannels = new Map<string, vscode.OutputChannel>();
         this.port = port;
         this.httpServer = http.createServer(function (request, response) {
             console.log(new Date() + ' Received request for ' + request.url);
@@ -139,6 +142,13 @@ export class AutoJsDebugServer extends EventEmitter {
             device.on("attach", (device) => {
                 this.attachDevice(device);
                 this.emit('new_device', device);
+                let logChannel = this.logChannels.get(device.name);
+                if (!logChannel) {
+                    logChannel = vscode.window.createOutputChannel(device.name);
+                    this.logChannels.set(device.name, logChannel);
+                }
+                logChannel.show();
+                logChannel.appendLine(`设备已连接：${device}`);
             });
         });
     }
@@ -201,12 +211,14 @@ export class AutoJsDebugServer extends EventEmitter {
     disconnect(): void {
         this.httpServer.close();
         this.emit("disconnect");
+        this.logChannels.clear();
     }
 
     private attachDevice(device: Device): void {
         this.devices.push(device);
         device.on('data:log', data => {
             console.log(data['log']);
+            this.logChannels.get(device.name).appendLine(data['log']);
             this.emit('log', data['log']);
         });
         device.on('disconnect', this.detachDevice.bind(this, device));
@@ -215,6 +227,7 @@ export class AutoJsDebugServer extends EventEmitter {
     private detachDevice(device: Device): void {
         this.devices.splice(this.devices.indexOf(device), 1);
         console.log("detachDevice: " + device);
+        this.logChannels.get(device.name).appendLine(`设备已断开：${device}`);
     }
 
 }
