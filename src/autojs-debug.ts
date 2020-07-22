@@ -187,6 +187,7 @@ export class AutoJsDebugServer extends EventEmitter {
     }
 
     sendProjectCommand(folder:string, command: string) {
+        let startTime = new Date().getTime();
         this.devices.forEach(device => {
             if(device.projectObserser == null || device.projectObserser.folder != folder){
                 device.projectObserser = new ProjectObserser(folder, this.fileFilter);
@@ -198,6 +199,7 @@ export class AutoJsDebugServer extends EventEmitter {
                         'id': folder,
                         'name': folder
                     });
+                    this.logChannels.get(device.name).appendLine(`发送项目耗时: ${(new Date().getTime() - startTime)/1000} 秒`);
                 });
         });
     }
