@@ -53,7 +53,6 @@ class Extension {
     private documentViewPanel: any = undefined;
 
     openDocument() {
-        console.log('准备打开文档');
         if (this.documentViewPanel) {
             this.documentViewPanel.reveal((vscode.ViewColumn as any).Beside);
         } else {
@@ -73,9 +72,9 @@ class Extension {
             );
             // Handle messages from the webview
             this.documentViewPanel.webview.onDidReceiveMessage(message => {
-                console.log('插件收到的消息：' + message.href);
+                // console.log('插件收到的消息：' + message.href);
                 let href = message.href.substring(message.href.indexOf("\/electron-browser\/") + 18);
-                console.log("得到uri：" + href)
+                // console.log("得到uri：" + href)
                 this.loadDocument(href)
             }, undefined, _context.subscriptions);
             this.documentViewPanel.onDidDispose(() => {
@@ -97,19 +96,12 @@ class Extension {
         try {
             let docRootPath = path.join(_context.extensionPath, "src", "document");
             let resourcePath = path.resolve(docRootPath, fileName);
-            console.log(resourcePath)
-            // let anchorIndex = resourcePath.lastIndexOf("#");
-            // let pagePath = resourcePath.substring(0, anchorIndex);
-            // let anchor = resourcePath.substring(anchorIndex);
             let html = fs.readFileSync(resourcePath, 'utf-8');
-            // // vscode不支持直接加载本地资源，需要替换成其专有路径格式，这里只是简单的将样式和JS的路径替换
+            // vscode不支持直接加载本地资源，需要替换成其专有路径格式，这里只是简单的将样式和JS的路径替换
             html = html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
-                console.log($2.substring($2.length - 4, $2.length))
                 if ($2.substring($2.length - 4, $2.length) != 'html') {
-                    console.log("处理html：" + $1 + vscode.Uri.file(path.resolve(docRootPath, $2)).with({ scheme: 'vscode-resource' }).toString() + '"')
                     return $1 + vscode.Uri.file(path.resolve(docRootPath, $2)).with({ scheme: 'vscode-resource' }).toString() + '"';
                 } else {
-                    console.log("处理非html:" + $1 + $2)
                     return $1 + $2 + '"';
                 }
             });
@@ -121,10 +113,15 @@ class Extension {
                     if (e) {
                         e.onclick = () =>{
                             if (e.href) {
-                                if (location.href.indexOf(e.href) < 0) {
+                                let target = e.href.substring(e.href.lastIndexOf("/"), 
+                                    (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
+                                let cur = location.href.substring(location.href.lastIndexOf("/"), 
+                                    (location.href.lastIndexOf("#") < 0 ? location.href.length : location.href.lastIndexOf("#")));
+                                if (target != cur && e.href.indexOf("http") < 0) {
+                                    let href= e.href.substring(e.href.lastIndexOf("/"), (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
                                     vscode.postMessage({href: e.href});
                                 } else {
-                                    console.log("内部跳转：" + e.href)
+                                    // console.log("内部跳转：" + e.href)
                                 }
                             }
                         }
