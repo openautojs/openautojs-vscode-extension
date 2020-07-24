@@ -2,7 +2,7 @@
   "name": "auto-js-vscodeext-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
   "description": "基于Auto.js-VSCode-Extension，优化了项目传输速度、支持直接在output面板查看执行记录",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "publisher": "710850609",
   "icon": "logo.png",
   "repository": {
@@ -16,6 +16,7 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:extension.openDocument",
     "onCommand:extension.startServer",
     "onCommand:extension.stopServer",
     "onCommand:extension.run",
@@ -35,54 +36,80 @@
         "language": "javascript"
       }
     ],
+		"menus": {
+			"editor/title": [
+				{
+					"when": "resourceLangId == javascript",
+					"command": "extension.openDocument",
+					"group": "navigation"
+				}
+			]
+		},
     "commands": [
       {
+        "command": "extension.openDocument",
+        "title": "Auto.js: 打开文档(Open Document)",
+        "icon": "logo.png"
+      },
+      {
         "command": "extension.startServer",
-        "title": "Auto.js: Start Server"
+        "title": "开启服务(Start Server)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.stopServer",
-        "title": "Auto.js: Stop Server"
+        "title": "停止服务(Stop Server)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.run",
-        "title": "Auto.js: Run"
+				"title": "运行脚本(Run)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.runOnDevice",
-        "title": "Auto.js: Run On Device"
+				"title": "在指定设备运行脚本(Run On Device)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.stop",
-        "title": "Auto.js: Stop"
+				"title": "停止当前脚本(Stop)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.stopAll",
-        "title": "Auto.js: Stop All"
+				"title": "停止所有脚本(Stop All)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.rerun",
-        "title": "Auto.js: Rerun"
+				"title": "重新运行(Rerun)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.save",
-        "title": "Auto.js: Save"
+				"title": "保存到所有设备(Save)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.saveToDevice",
-        "title": "Auto.js: Save On Device"
+				"title": "保存到指定设备(Save On Device)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.newProject",
-        "title": "Auto.js: New Project"
+				"title": "新建项目(New Project)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.saveProject",
-        "title": "Auto.js: Save Project"
+				"title": "保存项目到设备(Save Project)",
+				"category": "Auto.js"
       },
       {
         "command": "extension.runProject",
-        "title": "Auto.js: Run Project"
+				"title": "运行项目(Run Project)",
+				"category": "Auto.js"
       }
     ],
     "keybindings": [
