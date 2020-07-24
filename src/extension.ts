@@ -55,7 +55,7 @@ class Extension {
     openDocument() {
         console.log('准备打开文档');
         if (this.documentViewPanel) {
-            this.documentViewPanel.reveal(vscode.ViewColumn.Beside);
+            this.documentViewPanel.reveal((vscode.ViewColumn as any).Beside);
         } else {
             // 1.创建并显示Webview
             this.documentViewPanel = (vscode.window as any).createWebviewPanel(
