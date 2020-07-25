@@ -51,6 +51,7 @@ oldServer
 class Extension {
 
     private documentViewPanel: any = undefined;
+    private documentCache: Map<string, string> = new Map<string, string>();
 
     openDocument() {
         if (this.documentViewPanel) {
@@ -94,40 +95,45 @@ class Extension {
 
     private loadDocument(fileName) {
         try {
-            let docRootPath = path.join(_context.extensionPath, "src", "document");
-            let resourcePath = path.resolve(docRootPath, fileName);
-            let html = fs.readFileSync(resourcePath, 'utf-8');
-            // vscode不支持直接加载本地资源，需要替换成其专有路径格式，这里只是简单的将样式和JS的路径替换
-            html = html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
-                if ($2.substring($2.length - 4, $2.length) != 'html') {
-                    return $1 + vscode.Uri.file(path.resolve(docRootPath, $2)).with({ scheme: 'vscode-resource' }).toString() + '"';
-                } else {
-                    return $1 + $2 + '"';
-                }
-            });
-            // console.log(html)
-            this.documentViewPanel.webview.html = html + 
-            `<script>
-                const vscode = acquireVsCodeApi();
-                document.querySelectorAll("a").forEach(e => {
-                    if (e) {
-                        e.onclick = () =>{
-                            if (e.href) {
-                                let target = e.href.substring(e.href.lastIndexOf("/"), 
-                                    (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
-                                let cur = location.href.substring(location.href.lastIndexOf("/"), 
-                                    (location.href.lastIndexOf("#") < 0 ? location.href.length : location.href.lastIndexOf("#")));
-                                if (target != cur && e.href.indexOf("http") < 0) {
-                                    let href= e.href.substring(e.href.lastIndexOf("/"), (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
-                                    vscode.postMessage({href: e.href});
-                                } else {
-                                    // console.log("内部跳转：" + e.href)
+            let cache = this.documentCache.get(fileName);
+            if (!cache) {
+                let docRootPath = path.join(_context.extensionPath, "src", "document");
+                let resourcePath = path.resolve(docRootPath, fileName);
+                let html = fs.readFileSync(resourcePath, 'utf-8');
+                // vscode不支持直接加载本地资源，需要替换成其专有路径格式，这里只是简单的将样式和JS的路径替换
+                html = html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
+                    if ($2.substring($2.length - 4, $2.length) != 'html') {
+                        return $1 + vscode.Uri.file(path.resolve(docRootPath, $2)).with({ scheme: 'vscode-resource' }).toString() + '"';
+                    } else {
+                        return $1 + $2 + '"';
+                    }
+                });
+                // console.log(html)
+                cache = html + 
+                `<script>
+                    const vscode = acquireVsCodeApi();
+                    document.querySelectorAll("a").forEach(e => {
+                        if (e) {
+                            e.onclick = () =>{
+                                if (e.href) {
+                                    let target = e.href.substring(e.href.lastIndexOf("/"), 
+                                        (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
+                                    let cur = location.href.substring(location.href.lastIndexOf("/"), 
+                                        (location.href.lastIndexOf("#") < 0 ? location.href.length : location.href.lastIndexOf("#")));
+                                    if (target != cur && e.href.indexOf("http") < 0) {
+                                        let href= e.href.substring(e.href.lastIndexOf("/"), (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
+                                        vscode.postMessage({href: e.href});
+                                    } else {
+                                        // console.log("内部跳转：" + e.href)
+                                    }
                                 }
                             }
                         }
-                    }
-                })
-            </script>`;
+                    })
+                </script>`;
+                this.documentCache.set(fileName, cache);
+            }
+            this.documentViewPanel.webview.html = cache;
         } catch (e) {
             console.trace(e);
         }
