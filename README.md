@@ -103,6 +103,6 @@
 
 ### For more information
 
-* [Github repo](https://github.com/hyb1996/Auto.js-VSCode-Extension)
+* [Github repo](https://github.com/710850609/Auto.js-VSCode-Extension)
 
 **Enjoy!**
