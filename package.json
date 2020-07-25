@@ -2,7 +2,7 @@
   "name": "auto-js-vscodeext-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
   "description": "基于Auto.js-VSCode-Extension，优化了项目传输速度、支持直接在output面板查看执行记录、支持查看开发文档",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "publisher": "710850609",
   "icon": "logo.png",
   "repository": {
@@ -48,8 +48,9 @@
     "commands": [
       {
         "command": "extension.openDocument",
-        "title": "Auto.js: 打开文档(Open Document)",
-        "icon": "logo.png"
+        "title": "打开文档(Open Document)",
+        "icon": "logo.png",
+				"category": "Auto.js"
       },
       {
         "command": "extension.startServer",
@@ -113,6 +114,12 @@
       }
     ],
     "keybindings": [
+      {
+        "command": "extension.openDocument",
+        "key": "f4",
+        "mac": "f4",
+        "when": "editorTextFocus"
+      },
       {
         "command": "extension.run",
         "key": "f5",
