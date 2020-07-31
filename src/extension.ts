@@ -14,7 +14,7 @@ var recentDevice = null;
 
 server
     .on('connect', () => {
-        vscode.window.showInformationMessage('Auto.js server running');
+        vscode.window.showInformationMessage(`Auto.js server running on ${server.getIPAddress()}:${server.getPort()}`);
     })
     .on('new_device', (device: Device) => {
         var messageShown = false;
@@ -32,7 +32,7 @@ server
 
 oldServer
     .on('connect', () => {
-        console.log('Auto.js server running');
+        console.log(`Auto.js server running`);
     })
     .on('new_device', (device: Device) => {
         var messageShown = false;
@@ -120,11 +120,11 @@ class Extension {
                                         (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
                                     let cur = location.href.substring(location.href.lastIndexOf("/"), 
                                         (location.href.lastIndexOf("#") < 0 ? location.href.length : location.href.lastIndexOf("#")));
-                                    if (target != cur && e.href.indexOf("http") < 0) {
+                                    if (target == '/index.html' || (target != cur && e.href.indexOf("http") < 0)) {
                                         let href= e.href.substring(e.href.lastIndexOf("/"), (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
                                         vscode.postMessage({href: e.href});
                                     } else {
-                                        // console.log("内部跳转：" + e.href)
+                                        console.log("内部跳转：" + e.href)
                                     }
                                 }
                             }

@@ -159,7 +159,8 @@ export class AutoJsDebugServer extends EventEmitter {
         });
         this.httpServer.listen(this.port, '0.0.0.0', () => {
             let address = this.httpServer.address();
-            console.log(`server listening on ${address.address}':${address.port}`);
+            var localAddress = this.getIPAddress();
+            console.log(`server listening on ${localAddress}:${address.port} / ${address.address}:${address.port}`);
             this.emit("connect");
         });
     }
@@ -213,6 +214,25 @@ export class AutoJsDebugServer extends EventEmitter {
             channel.dispose();
         });
         this.logChannels.clear();
+    }
+    
+    /** 获取本地IP */
+    getIPAddress(): string {
+        var interfaces = require('os').networkInterfaces();
+        for (var devName in interfaces) {
+            var iface = interfaces[devName];
+            for (var i = 0; i < iface.length; i++) {
+                var alias = iface[i];
+                if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+                    return alias.address;
+                }
+            }
+        }
+    }
+
+    /** 获取服务运行端口 */
+    getPort(): number {
+        return this.port;
     }
 
     private attachDevice(device: Device): void {

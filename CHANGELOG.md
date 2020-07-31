@@ -4,6 +4,15 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 
+### 0.3.7
+优化以下特性：
+* 开启服务(Start Server): 支持显示本地IP，免去手动查询当前vscode运行机器所属IP
+* 开发文档: 优化重复点击”索引“菜单无跳转效果问题
+    PS: 由于官方文档在小屏幕下没有显示比较有效的导航引导，建议配合一下快捷键使用，提高跳转效率
+    - `Ctrl + Home`(到页面顶部)
+    - `Ctrl + End`(到页面底部)
+    - `PageUp`(上一页)
+    - `PageDown`(下一页)
 
 ### 0.3.6
 优化以下特性：
