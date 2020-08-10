@@ -4,6 +4,10 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
 
+### 0.3.8
+优化以下特性：
+* 开发文档： 修复HTTP文档打不开
+
 ### 0.3.7
 优化以下特性：
 * 开启服务(Start Server): 支持显示本地IP，免去手动查询当前vscode运行机器所属IP
