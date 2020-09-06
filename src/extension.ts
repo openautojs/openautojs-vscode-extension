@@ -276,7 +276,15 @@ class Extension {
             vscode.commands.executeCommand("vscode.openFolder", uri);
         });
     }
-
+    savePj2Device(url){
+         let folder =vscode.Uri.parse(url);
+            console.log("folder",folder);
+        if(!server.project || server.project.folder != folder){
+            server.project && server.project.dispose();
+            server.project = new Project(folder);
+        }
+        server.sendProjectCommand(folder.fsPath, "save_project");
+    }
     runProject() {
        this.sendProjectCommand("run_project");
     }
@@ -302,7 +310,7 @@ class Extension {
 
 let _context: any;
 const commands = ['openDocument', 'startServer', 'stopServer', 'run', 'runOnDevice', 'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject',
-            'runProject', 'saveProject'];
+            'runProject', 'saveProject',"savePj2Device"];
 let extension = new Extension();
 
 export function activate(context: vscode.ExtensionContext) {
