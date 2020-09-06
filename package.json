@@ -1,9 +1,9 @@
 {
-  "name": "auto-js-vscodeext-fixed",
+  "name": "auto-js-vsce-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
-  "description": "基于Auto.js-VSCode-Extension，优化了项目传输速度、支持直接在output面板查看执行记录、支持查看开发文档",
+  "description": "基于Auto.js-VSCodeExt-Fixed，主要添加右键菜单保存项目到设备,优化了项目传输速度、支持直接在output面板查看执行记录、支持查看开发文档",
   "version": "0.3.9",
-  "publisher": "aaron",
+  "publisher": "aaroncheng",
   "icon": "logo.png",
   "repository": {
     "type": "github",
