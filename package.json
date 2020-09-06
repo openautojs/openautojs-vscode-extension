@@ -2,12 +2,12 @@
   "name": "auto-js-vscodeext-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
   "description": "基于Auto.js-VSCode-Extension，优化了项目传输速度、支持直接在output面板查看执行记录、支持查看开发文档",
-  "version": "0.3.8",
-  "publisher": "710850609",
+  "version": "0.3.9",
+  "publisher": "aaron",
   "icon": "logo.png",
   "repository": {
     "type": "github",
-    "url": "https://github.com/710850609/Auto.js-VSCode-Extension"
+    "url": "https://github.com/kkevsekk1/Auto.js-VSCode-Extension"
   },
   "engines": {
     "vscode": "^1.17.0"

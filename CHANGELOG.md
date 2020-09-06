@@ -3,6 +3,9 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 0.3.9
+优化以下特性：
+* 文件夹--菜单中添加‘保存项目到设备’； 结合webpack 编译，混淆打包，保存到设备一气呵成
 
 ### 0.3.8
 优化以下特性：
