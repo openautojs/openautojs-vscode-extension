@@ -1,7 +1,7 @@
-# Auto.js-VSCodeExt-Fixed README
+# auto-js-vsce-fixed README
 
 ## 插件背景
-此插件基于Auto.Js作者开发的免费版Auto.Js对应的VsCode开发插件，进行优化二次开发。原插件代码于V0.2.1版本已没有更新，由于开发过程出现不够好用的情况，所以进行优化二次开发，二次开发从V0.3.0开始。[源码仓库](https://github.com/710850609/Auto.js-VSCode-Extension.git)
+此插件基于Auto.Js作者开发的免费版Auto.Js对应的VsCode开发插件，进行优化二次开发。原插件代码于V0.2.1版本已没有更新，由于开发过程出现不够好用的情况，所以进行优化二次开发，二次开发从V0.3.0开始。[源码仓库](https://github.com/kkevsekk1/Auto.js-VSCode-Extension)
 
 桌面编辑器Visual Studio Code的插件。可以让Visual Studio Code支持[Auto.js](https://github.com/hyb1996/NoRootScriptDroid)开发。
 
