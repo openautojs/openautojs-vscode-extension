@@ -1,17 +1,16 @@
-import * as net from 'net';
-import * as readline from 'readline';
 import { EventEmitter } from 'events';
 import * as ws from 'websocket';
-import * as http from 'http'
+import * as http from 'http';
+import * as querystring from 'querystring';
+import * as url from 'url';
 import * as fs from 'fs'
-import * as jszip from 'jszip'
 import { Project, ProjectObserser } from './project';
 import * as vscode from "vscode";
 
 const DEBUG = false;
 
-function logDebug(message?: any, ...optionalParams: any[]){
-    if(DEBUG){
+function logDebug(message?: any, ...optionalParams: any[]) {
+    if (DEBUG) {
         console.log.apply(console, arguments);
     }
 }
@@ -115,8 +114,8 @@ export class AutoJsDebugServer extends EventEmitter {
     public devices: Array<Device> = [];
     public project: Project = null;
     private logChannels: Map<string, vscode.OutputChannel>;
-    private fileFilter = (relativePath: string, absPath: string, stats: fs.Stats)=>{
-        if(!this.project){
+    private fileFilter = (relativePath: string, absPath: string, stats: fs.Stats) => {
+        if (!this.project) {
             return true;
         }
         return this.project.fileFilter(relativePath, absPath, stats);
@@ -126,10 +125,18 @@ export class AutoJsDebugServer extends EventEmitter {
         super();
         this.logChannels = new Map<string, vscode.OutputChannel>();
         this.port = port;
-        this.httpServer = http.createServer(function (request, response) {
+        this.httpServer = http.createServer((request, response) => {
             console.log(new Date() + ' Received request for ' + request.url);
-            response.writeHead(404);
-            response.end();
+            var urlObj = url.parse(request.url);
+            var query = urlObj.query;
+            var queryObj = querystring.parse(query);
+            if (urlObj.pathname == "/saveProject") {
+                response.end("this commond is:" +queryObj.cmd+"-->"+ queryObj.path);
+                this.emit('cmd', queryObj.cmd,queryObj.path);
+            } else {
+                response.writeHead(404);
+                response.end();
+            }
         });
         var wsServer = new ws.server({ httpServer: this.httpServer });
         wsServer.on('request', request => {
@@ -142,13 +149,12 @@ export class AutoJsDebugServer extends EventEmitter {
             device.on("attach", (device) => {
                 this.attachDevice(device);
                 this.emit('new_device', device);
-                
+
                 let logChannel = this.newLogChannel(device);
                 logChannel.appendLine(`设备已连接：${device}`);
             });
         });
     }
-
     openConnection(request: ws.request): ws.connection {
         return request.accept();
     }
@@ -183,10 +189,10 @@ export class AutoJsDebugServer extends EventEmitter {
         });
     }
 
-    sendProjectCommand(folder:string, command: string) {
+    sendProjectCommand(folder: string, command: string) {
         let startTime = new Date().getTime();
         this.devices.forEach(device => {
-            if(device.projectObserser == null || device.projectObserser.folder != folder){
+            if (device.projectObserser == null || device.projectObserser.folder != folder) {
                 device.projectObserser = new ProjectObserser(folder, this.fileFilter);
             }
             device.projectObserser.diff()
@@ -196,7 +202,7 @@ export class AutoJsDebugServer extends EventEmitter {
                         'id': folder,
                         'name': folder
                     });
-                    this.getLogChannel(device).appendLine(`发送项目耗时: ${(new Date().getTime() - startTime)/1000} 秒`);
+                    this.getLogChannel(device).appendLine(`发送项目耗时: ${(new Date().getTime() - startTime) / 1000} 秒`);
                 });
         });
     }
@@ -215,7 +221,7 @@ export class AutoJsDebugServer extends EventEmitter {
         });
         this.logChannels.clear();
     }
-    
+
     /** 获取本地IP */
     getIPAddress(): string {
         var interfaces = require('os').networkInterfaces();

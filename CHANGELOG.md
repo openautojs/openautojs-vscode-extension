@@ -3,6 +3,12 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 0.3.11
+优化以下特性：
+* 增加功能（watch模式）：根据项目配置，脚本保存后，自动重新运行脚本或保存项目到设备,
+* 完全实现工程化，编译、混淆、打包、热更，项目自动保存到手机、运行脚本。
+* js文件 右键， 保存脚本 (此处并非保存到项目下)
+
 ### 0.3.10
 优化以下特性：
 * 文件夹,右键菜单中添加‘保存项目到设备’； 结合webpack编译，混淆打包，保存到手机一气呵成
