@@ -1,7 +1,6 @@
 import { Uri } from "vscode";
 import * as vscode from "vscode";
 import * as fs from "fs";
-import { AutoJsDebugServer } from "./autojs-debug";
 import { FileObserver, FileFilter } from "./diff";
 import * as archiver from 'archiver'
 import * as path from 'path'

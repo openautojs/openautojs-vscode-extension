@@ -28,10 +28,10 @@ server
     }).on('cmd', (cmd: String, url: String) => {
         switch (cmd) {
             case "saveProject":
-                extension.savePj2Device(url);
+                extension.saveProject(url);
                 break;
             case "rerun":
-                extension.rerunWithUrl(url);
+                extension.rerun(url);
                 break;
 
             default:
@@ -60,10 +60,8 @@ oldServer
 
 
 class Extension {
-
     private documentViewPanel: any = undefined;
     private documentCache: Map<string, string> = new Map<string, string>();
-
     openDocument() {
         if (this.documentViewPanel) {
             this.documentViewPanel.reveal((vscode.ViewColumn as any).Beside);
@@ -184,16 +182,24 @@ class Extension {
             'command': 'stopAll'
         })
     }
-    rerunWithUrl(url) {
+    rerun(url?) {
         console.log("url-->", url);
-        let uri = vscode.Uri.parse(url);
-        let fileName = uri.fsPath;
-        console.log("fileName-->", fileName);
         let text = "";
-        try {
-            text = fs.readFileSync(fileName, 'utf8');
-        } catch (error) {
-            console.error(error);
+        let fileName = null;
+        if (url != null) {
+            let uri = vscode.Uri.parse(url);
+            fileName = uri.fsPath;
+            console.log("fileName-->", fileName);
+            try {
+                text = fs.readFileSync(fileName, 'utf8');
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            let editor = vscode.window.activeTextEditor;
+            console.log("dfn", editor.document.fileName);
+            fileName = editor.document.fileName;
+            text = editor.document.getText();
         }
         server.sendCommand('rerun', {
             'id': fileName,
@@ -207,29 +213,11 @@ class Extension {
             'name': fileName,
             'script': text
         });
-    }
 
-    rerun() {
-        let editor = vscode.window.activeTextEditor;
-        console.log("dfn", editor.document.fileName);
-        server.sendCommand('rerun', {
-            'id': editor.document.fileName,
-            'name': editor.document.fileName,
-            'script': editor.document.getText()
-        });
-        oldServer.send({
-            'type': 'command',
-            'command': 'rerun',
-            'view_id': editor.document.fileName,
-            'name': editor.document.fileName,
-            'script': editor.document.getText()
-        });
     }
-
     runOnDevice() {
         this.selectDevice(device => this.runOn(device));
     }
-
     selectDevice(callback) {
         let devices: Array<Device | oldAutojs.Device> = server.devices;
         devices = devices.concat(oldServer.devices);
@@ -249,7 +237,6 @@ class Extension {
                 callback(device);
             });
     }
-
     runOn(target: AutoJsDebugServer | Device | oldAutojs.Device | oldAutojs.AutoJsDebugServer) {
         let editor = vscode.window.activeTextEditor;
         if (target instanceof oldAutojs.Device || target instanceof oldAutojs.AutoJsDebugServer) {
@@ -270,31 +257,47 @@ class Extension {
 
     }
 
-    save() {
-        this.saveTo(server);
+    save(url?) {
+        this.saveTo(server, url);
     }
-
     saveToDevice() {
         this.selectDevice(device => this.saveTo(device));
     }
 
-    saveTo(target: AutoJsDebugServer | Device | oldAutojs.Device) {
-        let editor = vscode.window.activeTextEditor;
+    saveTo(target: AutoJsDebugServer | Device | oldAutojs.Device, url?) {
+        console.log("url-->", url);
+        let text = "";
+        let fileName = "";
+        if (null == url) {
+            let uri = vscode.Uri.parse(url);
+            let fileName = uri.fsPath;
+            console.log("fileName-->", fileName);
+            try {
+                text = fs.readFileSync(fileName, 'utf8');
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            let editor = vscode.window.activeTextEditor;
+            fileName = editor.document.fileName;
+            text = editor.document.getText();
+        }
         if (target instanceof oldAutojs.Device || target instanceof oldAutojs.AutoJsDebugServer) {
             target.send({
                 'command': 'save',
                 'type': 'command',
-                'view_id': editor.document.fileName,
-                'name': editor.document.fileName,
-                'script': editor.document.getText()
+                'view_id': fileName,
+                'name': fileName,
+                'script': text
             })
         } else {
             target.sendCommand('save', {
-                'id': editor.document.fileName,
-                'name': editor.document.fileName,
-                'script': editor.document.getText()
+                'id': fileName,
+                'name': fileName,
+                'script': text
             })
         }
+
     }
 
     newProject() {
@@ -312,42 +315,42 @@ class Extension {
             vscode.commands.executeCommand("vscode.openFolder", uri);
         });
     }
-    savePj2Device(url) {
+    runProject() {
+        this.sendProjectCommand("run_project");
+    }
+    sendProjectCommand(command: string, url?) {
         console.log("url-->", url);
-        let folder = vscode.Uri.parse(url);
+        let folder = null;
+        if (url == null) {
+            let folders = vscode.workspace.workspaceFolders;
+            if (!folders || folders.length == 0) {
+                vscode.window.showInformationMessage("请打开一个项目的文件夹");
+                return null;
+            }
+            folder = folders[0].uri;
+        } else {
+            folder = vscode.Uri.parse(url);
+        }
         console.log("folder-->", folder);
         if (!server.project || server.project.folder != folder) {
             server.project && server.project.dispose();
             server.project = new Project(folder);
         }
-        server.sendProjectCommand(folder.fsPath, "save_project");
-    }
-    runProject() {
-        this.sendProjectCommand("run_project");
-    }
-
-    sendProjectCommand(command: string) {
-        let folders = vscode.workspace.workspaceFolders;
-        if (!folders || folders.length == 0) {
-            vscode.window.showInformationMessage("请打开一个项目的文件夹");
-            return null;
-        }
-        let folder = folders[0].uri;
         if (!server.project || server.project.folder != folder) {
             server.project && server.project.dispose();
             server.project = new Project(folder);
         }
         server.sendProjectCommand(folder.fsPath, command);
     }
-    saveProject() {
-        this.sendProjectCommand("save_project");
+    saveProject(url?) {
+        this.sendProjectCommand("save_project",url);
     }
 };
 
 
 let _context: any;
 const commands = ['openDocument', 'startServer', 'stopServer', 'run', 'runOnDevice', 'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject',
-    'runProject', 'saveProject', "savePj2Device"];
+    'runProject', 'saveProject'];
 let extension = new Extension();
 
 export function activate(context: vscode.ExtensionContext) {

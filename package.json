@@ -2,7 +2,7 @@
   "name": "auto-js-vsce-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
   "description": "基于Auto.js-VSCodeExt-Fixed，主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "publisher": "aaroncheng",
   "icon": "logo.png",
   "repository": {
@@ -27,8 +27,7 @@
     "onCommand:extension.saveToDevice",
     "onCommand:extension.newProject",
     "onCommand:extension.runProject",
-    "onCommand:extension.saveProject",
-    "onCommand:extension.savePj2Device"
+    "onCommand:extension.saveProject"
   ],
   "main": "./out/extension",
   "contributes": {
@@ -39,36 +38,38 @@
     ],
 		"menus": {
 			"editor/title": [
-				{
+				{ 
+          
 					"when": "resourceLangId == javascript",
 					"command": "extension.openDocument",
-					"group": "navigation"
+					"group": "navigation@2"
         },
         {
           "when": "resourceLangId == javascript",
 					"command": "extension.run",
-					"group": "navigation"
+					"group": "navigation@1"
 				}
       ],
       "explorer/context": [
 				{
+          
           "when": "explorerResourceIsFolder",
-					"command": "extension.savePj2Device",
+					"command": "extension.saveProject",
 					"group": "navigation"
         },
         {
           "when": "!explorerResourceIsFolder&&resourceExtname==.js",
-					"command": "extension.run",
-					"group": "navigation"
-				}
+					"command": "extension.rerun",
+					"group": "navigation@1"
+        },
+        {
+          "when": "!explorerResourceIsFolder",
+					"command": "extension.save",
+					"group": "navigation@2"
+        }
 			]
 		},
     "commands": [
-      {
-      "command": "extension.savePj2Device",
-      "title": "autojs.保存项目到设备",
-      "category": "Auto.js"
-    },
       {
         "command": "extension.openDocument",
         "title": "打开文档(Open Document)",
@@ -116,6 +117,7 @@
 				"title": "保存到所有设备(Save)",
 				"category": "Auto.js"
       },
+
       {
         "command": "extension.saveToDevice",
 				"title": "保存到指定设备(Save On Device)",
