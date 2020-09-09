@@ -7,7 +7,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 优化以下特性：
 * 增加功能（watch模式）：根据项目配置，脚本保存后，自动重新运行脚本或保存项目到设备,
 * 完全实现工程化，编译、混淆、打包、热更，项目自动保存到手机、运行脚本。
-* js文件 右键， 保存脚本 (此处并非保存到项目下)
+* js文件 右键， 保存脚本 (此处并非保存到项目下,而是在通用目录中)
+* 请结合 webpack-autojs cli自动化工具，开发一行代码，不用按f5，来回叨叨了 https://github.com/kkevsekk1/webpack-autojs
 
 ### 0.3.10
 优化以下特性：

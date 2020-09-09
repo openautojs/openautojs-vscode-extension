@@ -1,9 +1,11 @@
-# auto-js-vsce-fixed README
+# Auto.js-VSCodeExt-Fixed
 
 ## 插件背景
-此插件基于Auto.Js作者开发的免费版Auto.Js对应的VsCode开发插件，进行优化二次开发。原插件代码于V0.2.1版本已没有更新，由于开发过程出现不够好用的情况，所以进行优化二次开发，二次开发从V0.3.0开始。[源码仓库](https://github.com/kkevsekk1/Auto.js-VSCode-Extension)
+基于[Auto.js-VSCodeExt-Fixed，0.3.8](https://github.com/710850609/Auto.js-VSCode-Extension)版本开发， 主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成，插件里还有几个功能（如保存普通资源脚本目录等）是以前的代码无法快速实现的。可能修改安卓apk。详细信息请看change log
 
-桌面编辑器Visual Studio Code的插件。可以让Visual Studio Code支持[Auto.js](https://github.com/hyb1996/NoRootScriptDroid)开发。
+。[源码仓库](https://github.com/kkevsekk1/Auto.js-VSCode-Extension)
+
+桌面编辑器Visual Studio Code的插件。可以让Visual Studio Code支持[Auto.js](https://github.com/hyb1996/Auto.js) 和 [AutoXjs](https://github.com/kkevsekk1/AutoX)(这个与autojs略有差异,修复了一些bug)开发。
 
 ## Install
 
@@ -14,7 +16,7 @@
 目前功能比较基础，仅支持：
 
 * 在VS Code的开发者工具实时显示Auto.js的日志与输出
-* 在VS Code命令中增加Run, Stop, Rerun, Stop all等选项。可以在手机与电脑连接后把Sublime编辑器中的脚本推送到AutoJs中执行，或者停止AutoJs中运行的脚本。
+* 在VS Code命令中增加Run, Stop, Rerun, Stop all等选项。可以在手机与电脑连接后把vscode编辑器中的脚本推送到AutoJs中执行，或者停止AutoJs中运行的脚本。
 
 ## Usage
 

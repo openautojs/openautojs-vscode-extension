@@ -130,7 +130,7 @@ export class AutoJsDebugServer extends EventEmitter {
             var urlObj = url.parse(request.url);
             var query = urlObj.query;
             var queryObj = querystring.parse(query);
-            if (urlObj.pathname == "/saveProject") {
+            if (urlObj.pathname == "/exec") {
                 response.writeHead(200);
                 response.end("this commond is:" +queryObj.cmd+"-->"+ queryObj.path);
                 this.emit('cmd', queryObj.cmd,queryObj.path);

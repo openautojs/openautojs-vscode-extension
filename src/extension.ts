@@ -27,7 +27,7 @@ server
         device.on('data:device_name', showMessage);
     }).on('cmd', (cmd: String, url: String) => {
         switch (cmd) {
-            case "saveProject":
+            case "save":
                 extension.saveProject(url);
                 break;
             case "rerun":
