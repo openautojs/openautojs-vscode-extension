@@ -31,7 +31,8 @@ server
                 extension.saveProject(url);
                 break;
             case "rerun":
-                extension.rerun(url);
+                extension.stopAll();
+                extension.run(url);
                 break;
 
             default:
@@ -159,11 +160,9 @@ class Extension {
         vscode.window.showInformationMessage('Auto.js server stopped');
     }
 
-    run() {
-        this.runOn(server);
-        this.runOn(oldServer);
+    run(url?) {
+        this.runOrRerun('run',url);
     }
-
     stop() {
         server.sendCommand('stop', {
             'id': vscode.window.activeTextEditor.document.fileName,
@@ -183,6 +182,10 @@ class Extension {
         })
     }
     rerun(url?) {
+        this.runOrRerun('rerun',url);
+
+    }
+    runOrRerun(cmd,url?){
         console.log("url-->", url);
         let text = "";
         let fileName = null;
@@ -201,20 +204,20 @@ class Extension {
             fileName = editor.document.fileName;
             text = editor.document.getText();
         }
-        server.sendCommand('rerun', {
+        server.sendCommand(cmd, {
             'id': fileName,
             'name': fileName,
             'script': text
         });
         oldServer.send({
             'type': 'command',
-            'command': 'rerun',
+            'command': cmd,
             'view_id': fileName,
             'name': fileName,
             'script': text
         });
-
     }
+
     runOnDevice() {
         this.selectDevice(device => this.runOn(device));
     }

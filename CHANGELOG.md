@@ -3,6 +3,10 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 0.3.12
+优化以下特性：
+* 增加功能（watch模式）下rerun 为先发stop，再发run命令的模式，来修复rerun 造成app闪退问题
+
 ### 0.3.11
 优化以下特性：
 * 增加功能（watch模式）：根据项目配置，脚本保存后，自动重新运行脚本或保存项目到设备,
