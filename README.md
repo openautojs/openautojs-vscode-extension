@@ -3,6 +3,10 @@
 ## 插件背景
 基于[Auto.js-VSCodeExt-Fixed，0.3.8](https://github.com/710850609/Auto.js-VSCode-Extension)版本开发， 主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成，插件里还有几个功能（如保存普通资源脚本目录等）是以前的代码无法快速实现的。可能修改安卓apk。详细信息请看change log
 
+`注意：`
+
+本插件不能和老版本的 [Auto.js-VSCodeExt-Fixed，0.3.8](https://github.com/710850609/Auto.js-VSCode-Extension) 同时启用，因为使用了同样的 端口。功能会冲突！
+
 。[源码仓库](https://github.com/kkevsekk1/Auto.js-VSCode-Extension)
 
 桌面编辑器Visual Studio Code的插件。可以让Visual Studio Code支持[Auto.js](https://github.com/hyb1996/Auto.js) 和 [AutoXjs](https://github.com/kkevsekk1/AutoX)(这个与autojs略有差异,修复了一些bug)开发。

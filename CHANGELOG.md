@@ -3,6 +3,11 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 0.3.13
+优化以下特性：
+* 兼容webpack 5
+* 功能冲突问题
+
 ### 0.3.12
 优化以下特性：
 * 增加功能（watch模式）下rerun 为先发stop，再发run命令的模式，来修复rerun 造成app闪退问题

@@ -2,7 +2,7 @@
   "name": "auto-js-vsce-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
   "description": "基于Auto.js-VSCodeExt-Fixed，主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "publisher": "aaroncheng",
   "icon": "logo.png",
   "repository": {

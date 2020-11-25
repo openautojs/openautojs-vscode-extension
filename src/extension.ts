@@ -7,10 +7,7 @@ import * as path from 'path';
 import * as fs from 'fs'
 
 var server = new AutoJsDebugServer(9317);
-var oldServer = new oldAutojs.AutoJsDebugServer(1209);
-
 var recentDevice = null;
-
 server
     .on('connect', () => {
         vscode.window.showInformationMessage(`Auto.js server running on ${server.getIPAddress()}:${server.getPort()}`);
@@ -32,9 +29,10 @@ server
                 break;
             case "rerun":
                 extension.stopAll();
-                extension.run(url);
+                setTimeout(function() {
+                    extension.run(url);
+                  }, 1000);
                 break;
-
             default:
                 break;
         }
@@ -42,21 +40,7 @@ server
     .on('log', log => {
     });
 
-oldServer
-    .on('connect', () => {
-        console.log(`Auto.js server running`);
-    })
-    .on('new_device', (device: Device) => {
-        var messageShown = false;
-        var showMessage = () => {
-            if (messageShown)
-                return;
-            vscode.window.showInformationMessage('New device attached: ' + device);
-            messageShown = true;
-        };
-        setTimeout(showMessage, 1000);
-        device.on('data:device_name', showMessage);
-    });
+
 
 
 
@@ -151,12 +135,10 @@ class Extension {
 
     startServer() {
         server.listen();
-        oldServer.listen();
     }
 
     stopServer() {
         server.disconnect();
-        oldServer.disconnect();
         vscode.window.showInformationMessage('Auto.js server stopped');
     }
 
@@ -167,19 +149,12 @@ class Extension {
         server.sendCommand('stop', {
             'id': vscode.window.activeTextEditor.document.fileName,
         });
-        oldServer.send({
-            'type': 'command',
-            'view_id': vscode.window.activeTextEditor.document.fileName,
-            'command': 'stop',
-        })
+     
     }
 
     stopAll() {
         server.sendCommand('stopAll');
-        oldServer.send({
-            'type': 'command',
-            'command': 'stopAll'
-        })
+   
     }
     rerun(url?) {
         this.runOrRerun('rerun',url);
@@ -209,13 +184,6 @@ class Extension {
             'name': fileName,
             'script': text
         });
-        oldServer.send({
-            'type': 'command',
-            'command': cmd,
-            'view_id': fileName,
-            'name': fileName,
-            'script': text
-        });
     }
 
     runOnDevice() {
@@ -223,7 +191,6 @@ class Extension {
     }
     selectDevice(callback) {
         let devices: Array<Device | oldAutojs.Device> = server.devices;
-        devices = devices.concat(oldServer.devices);
         if (recentDevice) {
             let i = devices.indexOf(recentDevice);
             if (i > 0) {

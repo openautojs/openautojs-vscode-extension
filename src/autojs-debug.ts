@@ -107,9 +107,7 @@ export class Device extends EventEmitter {
 }
 
 export class AutoJsDebugServer extends EventEmitter {
-
     private httpServer: http.Server;
-    private wsServer: ws.server;
     private port: number;
     public devices: Array<Device> = [];
     public project: Project = null;
