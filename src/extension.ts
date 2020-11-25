@@ -1,7 +1,6 @@
 'use strict';
 import * as vscode from 'vscode';
 import { AutoJsDebugServer, Device } from './autojs-debug';
-import * as oldAutojs from './autojs-debug-old';
 import { ProjectTemplate, Project } from './project';
 import * as path from 'path';
 import * as fs from 'fs'
@@ -190,7 +189,7 @@ class Extension {
         this.selectDevice(device => this.runOn(device));
     }
     selectDevice(callback) {
-        let devices: Array<Device | oldAutojs.Device> = server.devices;
+        let devices: Array<Device> = server.devices;
         if (recentDevice) {
             let i = devices.indexOf(recentDevice);
             if (i > 0) {
@@ -207,16 +206,9 @@ class Extension {
                 callback(device);
             });
     }
-    runOn(target: AutoJsDebugServer | Device | oldAutojs.Device | oldAutojs.AutoJsDebugServer) {
+    runOn(target: AutoJsDebugServer | Device ) {
         let editor = vscode.window.activeTextEditor;
-        if (target instanceof oldAutojs.Device || target instanceof oldAutojs.AutoJsDebugServer) {
-            target.send({
-                'type': 'command',
-                'command': 'run',
-                'view_id': editor.document.fileName,
-                'name': editor.document.fileName,
-                'script': editor.document.getText()
-            })
+        if (false) {
         } else {
             target.sendCommand('run', {
                 'id': editor.document.fileName,
@@ -234,7 +226,7 @@ class Extension {
         this.selectDevice(device => this.saveTo(device));
     }
 
-    saveTo(target: AutoJsDebugServer | Device | oldAutojs.Device, url?) {
+    saveTo(target: AutoJsDebugServer | Device , url?) {
         console.log("url-->", url);
         let text = "";
         let fileName = "";
@@ -252,14 +244,8 @@ class Extension {
             fileName = editor.document.fileName;
             text = editor.document.getText();
         }
-        if (target instanceof oldAutojs.Device || target instanceof oldAutojs.AutoJsDebugServer) {
-            target.send({
-                'command': 'save',
-                'type': 'command',
-                'view_id': fileName,
-                'name': fileName,
-                'script': text
-            })
+        if (false) {
+          
         } else {
             target.sendCommand('save', {
                 'id': fileName,
