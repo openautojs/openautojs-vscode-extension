@@ -230,7 +230,7 @@ class Extension {
         console.log("url-->", url);
         let text = "";
         let fileName = "";
-        if (null == url) {
+        if (null != url) {
             let uri = vscode.Uri.parse(url);
             let fileName = uri.fsPath;
             console.log("fileName-->", fileName);
