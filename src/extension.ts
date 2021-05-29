@@ -21,6 +21,7 @@ server
         };
         setTimeout(showMessage, 1000);
         device.on('data:device_name', showMessage);
+        // device.send("hello","打开连接");
     }).on('cmd', (cmd: String, url: String) => {
         switch (cmd) {
             case "save":
@@ -36,8 +37,6 @@ server
                 break;
         }
     })
-    .on('log', log => {
-    });
 
 
 

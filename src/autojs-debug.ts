@@ -46,9 +46,11 @@ export class Device extends EventEmitter {
         }, HANDSHAKE_TIMEOUT);
     }
 
-    send(type: string, data: object): void {
+    send(type: string, data: any): void {
+        let   message_id = `${Date.now()}_${Math.random()}`;
         this.connection.sendUTF(JSON.stringify({
             type: type,
+            message_id,
             data: data
         }));
     }
@@ -59,9 +61,11 @@ export class Device extends EventEmitter {
 
     sendBytesCommand(command: string, md5: string, data: object = {}): void {
         data = Object(data);
-        data['command'] = command;
+        data['command'] = command; 
+        let   message_id = `${Date.now()}_${Math.random()}`;
         this.connection.sendUTF(JSON.stringify({
             type: 'bytes_command',
+            message_id,
             md5: md5,
             data: data
         }));
@@ -89,6 +93,11 @@ export class Device extends EventEmitter {
             if (message.type == 'utf8') {
                 try {
                     let json = JSON.parse(message.utf8Data);
+                    if(json.type=="hello"){
+                        logDebug("返回消息")
+                     let message_id = `${Date.now()}_${Math.random()}`;
+                      this.connection.sendUTF(JSON.stringify( {message_id,  data:"连接成功",debug:true, type: 'hello' }));
+                    }
                     logDebug("json: ", json);
                     this.emit('message', json);
                     this.emit('data:' + json['type'], json['data']);
@@ -140,20 +149,19 @@ export class AutoJsDebugServer extends EventEmitter {
         });
         var wsServer = new ws.server({ httpServer: this.httpServer });
         wsServer.on('request', request => {
-            logDebug('request: ', request);
             let connection = this.openConnection(request);
             if (!connection) {
                 return;
             }
             let device = new Device(connection);
+            logDebug(connection.state,"--->status")
             device.on("attach", (device) => {
                 this.attachDevice(device);
                 this.emit('new_device', device);
-
                 let logChannel = this.newLogChannel(device);
                 logChannel.appendLine(`设备已连接：${device}`);
             });
-        });
+        })
     }
     openConnection(request: ws.request): ws.connection {
         return request.accept();
@@ -171,7 +179,7 @@ export class AutoJsDebugServer extends EventEmitter {
         });
     }
 
-    send(type: string, data: object): void {
+    send(type: string, data: any): void {
         this.devices.forEach(device => {
             device.send(type, data);
         });

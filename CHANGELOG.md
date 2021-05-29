@@ -3,6 +3,11 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 0.3.14
+优化以下特性：
+* 兼容应用商店版
+* 修复UI闪退问题
+
 ### 0.3.13
 优化以下特性：
 * 兼容webpack 5
