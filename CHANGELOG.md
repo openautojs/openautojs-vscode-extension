@@ -3,6 +3,11 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 1.97.2
+优化以下特性：
+* vscode中使用统一文档
+  
+
 ### 0.3.14
 优化以下特性：
 * 兼容应用商店版
