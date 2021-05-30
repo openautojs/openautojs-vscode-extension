@@ -29,9 +29,9 @@ server
                 break;
             case "rerun":
                 extension.stopAll();
-                setTimeout(function() {
+                setTimeout(function () {
                     extension.run(url);
-                  }, 1000);
+                }, 1000);
                 break;
             default:
                 break;
@@ -52,9 +52,9 @@ class Extension {
             // 1.创建并显示Webview
             this.documentViewPanel = (vscode.window as any).createWebviewPanel(
                 // 该webview的标识，任意字符串
-                'Auto.js Document',
+                'Autox.js Document',
                 // webview面板的标题，会展示给用户
-                'Auto.js开发文档',
+                'Autox.js开发文档',
                 // webview面板所在的分栏
                 (vscode.ViewColumn as any).Beside,
                 // 其它webview选项
@@ -79,51 +79,42 @@ class Extension {
         }
         try {
             // 默认加载首页
-            this.loadDocument("index.html");
+            this.loadDocument("http://doc.autoxjs.com/#/");
         } catch (e) {
             console.trace(e)
         }
     }
 
-    private loadDocument(fileName) {
+    private loadDocument(url) {
         try {
-            let cache = this.documentCache.get(fileName);
+            let cache = this.documentCache.get(url);
             if (!cache) {
-                let docRootPath = path.join(_context.extensionPath, "src", "document");
-                let resourcePath = path.resolve(docRootPath, fileName);
-                let html = fs.readFileSync(resourcePath, 'utf-8');
-                // vscode不支持直接加载本地资源，需要替换成其专有路径格式，这里只是简单的将样式和JS的路径替换
-                html = html.replace(/(<link.+?href="|<script.+?src="|<img.+?src=")(.+?)"/g, (m, $1, $2) => {
-                    if ($2.substring($2.length - 4, $2.length) != 'html') {
-                        return $1 + vscode.Uri.file(path.resolve(docRootPath, $2)).with({ scheme: 'vscode-resource' }).toString() + '"';
-                    } else {
-                        return $1 + $2 + '"';
+                cache = `<!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+                    <meta content="portrait" name="x5-orientation">
+                    <meta content="true" name="x5-fullscreen">
+                    <meta content="portrait" name="screen-orientation">
+                    <meta content="yes" name="full-screen">
+                    <meta content="webkit" name="renderer">
+                    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+                    <title>微信读书</title>
+                    <style>
+                    html,body,iframe{
+                        width:100%;
+                        height:100%;
+                        border:0;
+                        overflow: hidden;
                     }
-                });
-                // console.log(html)
-                cache = html +
-                    `<script>
-                    const vscode = acquireVsCodeApi();
-                    document.querySelectorAll("a").forEach(e => {
-                        if (e) {
-                            e.onclick = () =>{
-                                if (e.href) {
-                                    let target = e.href.substring(e.href.lastIndexOf("/"), 
-                                        (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
-                                    let cur = location.href.substring(location.href.lastIndexOf("/"), 
-                                        (location.href.lastIndexOf("#") < 0 ? location.href.length : location.href.lastIndexOf("#")));
-                                    if (target == '/index.html' || (target != cur && e.href.indexOf("http") != 0)) {
-                                        let href= e.href.substring(e.href.lastIndexOf("/"), (e.href.lastIndexOf("#") < 0 ? e.href.length : e.href.lastIndexOf("#")));
-                                        vscode.postMessage({href: e.href});
-                                    } else {
-                                        console.log("内部跳转：" + e.href)
-                                    }
-                                }
-                            }
-                        }
-                    })
-                </script>`;
-                this.documentCache.set(fileName, cache);
+                    </style>
+                </head>
+                <body>
+                    <iframe src="`+ url + `"/>
+                </body>
+                </html>`;
+                this.documentCache.set(url, cache);
             }
             this.documentViewPanel.webview.html = cache;
         } catch (e) {
@@ -141,24 +132,24 @@ class Extension {
     }
 
     run(url?) {
-        this.runOrRerun('run',url);
+        this.runOrRerun('run', url);
     }
     stop() {
         server.sendCommand('stop', {
             'id': vscode.window.activeTextEditor.document.fileName,
         });
-     
+
     }
 
     stopAll() {
         server.sendCommand('stopAll');
-   
-    }
-    rerun(url?) {
-        this.runOrRerun('rerun',url);
 
     }
-    runOrRerun(cmd,url?){
+    rerun(url?) {
+        this.runOrRerun('rerun', url);
+
+    }
+    runOrRerun(cmd, url?) {
         console.log("url-->", url);
         let text = "";
         let fileName = null;
@@ -205,7 +196,7 @@ class Extension {
                 callback(device);
             });
     }
-    runOn(target: AutoJsDebugServer | Device ) {
+    runOn(target: AutoJsDebugServer | Device) {
         let editor = vscode.window.activeTextEditor;
         if (false) {
         } else {
@@ -225,8 +216,8 @@ class Extension {
         this.selectDevice(device => this.saveTo(device));
     }
 
-    saveTo(target: AutoJsDebugServer | Device , url?) {
-        console.log("url-->", url);
+    saveTo(target: AutoJsDebugServer | Device, url?) {
+       
         let text = "";
         let fileName = "";
         if (null == url) {
@@ -243,15 +234,12 @@ class Extension {
             fileName = editor.document.fileName;
             text = editor.document.getText();
         }
-        if (false) {
-          
-        } else {
-            target.sendCommand('save', {
-                'id': fileName,
-                'name': fileName,
-                'script': text
-            })
-        }
+        console.log("url-->", fileName);
+        target.sendCommand('save', {
+            'id': fileName,
+            'name': fileName,
+            'script': text
+        })
 
     }
 
@@ -298,7 +286,7 @@ class Extension {
         server.sendProjectCommand(folder.fsPath, command);
     }
     saveProject(url?) {
-        this.sendProjectCommand("save_project",url);
+        this.sendProjectCommand("save_project", url);
     }
 };
 

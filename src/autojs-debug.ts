@@ -48,6 +48,7 @@ export class Device extends EventEmitter {
 
     send(type: string, data: any): void {
         let   message_id = `${Date.now()}_${Math.random()}`;
+        console.log(data);
         this.connection.sendUTF(JSON.stringify({
             type: type,
             message_id,
