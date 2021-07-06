@@ -152,25 +152,25 @@ class Extension {
     runOrRerun(cmd, url?) {
         console.log("url-->", url);
         let text = "";
-        let fileName = null;
+        let filename = null;
         if (url != null) {
             let uri = vscode.Uri.parse(url);
-            fileName = uri.fsPath;
-            console.log("fileName-->", fileName);
+            filename = uri.fsPath;
+            console.log("fileName-->", filename);
             try {
-                text = fs.readFileSync(fileName, 'utf8');
+                text = fs.readFileSync(filename, 'utf8');
             } catch (error) {
                 console.error(error);
             }
         } else {
             let editor = vscode.window.activeTextEditor;
             console.log("dfn", editor.document.fileName);
-            fileName = editor.document.fileName;
+            filename = editor.document.fileName;
             text = editor.document.getText();
         }
         server.sendCommand(cmd, {
-            'id': fileName,
-            'name': fileName,
+            'id': filename,
+            'name': filename,
             'script': text
         });
     }
@@ -219,27 +219,32 @@ class Extension {
     saveTo(target: AutoJsDebugServer | Device, url?) {
        
         let text = "";
-        let fileName = "";
+        let filename = "";
         if (null != url) {
             let uri = vscode.Uri.parse(url);
-            let fileName = uri.fsPath;
-            console.log("fileName-->", fileName);
+            filename = uri.fsPath;
+            console.log("fileName-->", filename);
             try {
-                text = fs.readFileSync(fileName, 'utf8');
+                text = fs.readFileSync(filename, 'utf8');
             } catch (error) {
                 console.error(error);
             }
         } else {
             let editor = vscode.window.activeTextEditor;
-            fileName = editor.document.fileName;
+            filename = editor.document.fileName;
             text = editor.document.getText();
         }
-        console.log("url-->", fileName);
-        target.sendCommand('save', {
-            'id': fileName,
-            'name': fileName,
+        console.log("url-->", filename);
+        try {
+          target.sendCommand('save', {
+            'id': filename,
+            'name': filename,
             'script': text
         })
+        } catch (error) {
+          console.error(error);
+        }
+  
 
     }
 
