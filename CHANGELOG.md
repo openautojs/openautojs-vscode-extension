@@ -4,6 +4,12 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 1.99.0
+
+优化以下特性：
+
+- 修复 1.98 版本中，文件名丢失的 bug
+
 ### 1.98.0
 
 优化以下特性：
