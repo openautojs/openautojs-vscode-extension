@@ -27,7 +27,13 @@ export class ProjectTemplate {
         var uri = this.uri;
         var jsonFilePath = path.join(uri.fsPath, "project.json");
         var mainFilePath = path.join(uri.fsPath, "main.js");
-        var mainScript = "toast('Hello, Auto.js');";
+        if(fs.existsSync(mainFilePath)){
+          fs.renameSync(mainFilePath,mainFilePath+".backup");
+        }
+        if(fs.existsSync(jsonFilePath)){
+          fs.renameSync(jsonFilePath,jsonFilePath+".backup");
+        }
+        var mainScript = "toast('Hello, AutoX.js');";
         return projectConfig.save(jsonFilePath)
             .then(() => {
                 return new Promise<Uri>(function (res, rej) {

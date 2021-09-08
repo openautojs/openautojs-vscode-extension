@@ -4,6 +4,12 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 1.100.0
+
+优化以下特性：
+
+- 修复创建新项目时候，非空文件夹中 main.js 和 project.json 被覆盖的问题
+
 ### 1.99.0
 
 优化以下特性：
