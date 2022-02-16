@@ -4,6 +4,13 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 1.101.0
+
+优化以下特性：
+
+- 服务器多 ip 无法显示所有 ip 问题
+- 命令行分组提示 区分 autojs
+
 ### 1.100.0
 
 优化以下特性：

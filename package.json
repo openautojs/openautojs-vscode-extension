@@ -1,8 +1,8 @@
 {
   "name": "auto-js-vsce-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
-  "description": "这是免费版中功能最好的了，主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成",
-  "version": "1.100.0",
+  "description": "用于在pc上vscode中开发autoxjs的自动化脚本的插件。兼容autojs 和autoxjs 修复一些bug，主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成",
+  "version": "1.101.0",
   "publisher": "aaroncheng",
   "icon": "logo.png",
   "repository": {
@@ -78,68 +78,68 @@
         "command": "extension.openDocument",
         "title": "打开文档(Open Document)",
         "icon": "logo.png",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.startServer",
-        "title": "开启服务(Start Server)",
-        "category": "Auto.js"
+        "title": "开启服务(Start Server), 如有多个同类插件，请禁用其他或本插件",
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.stopServer",
         "title": "停止服务(Stop Server)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.run",
         "title": "运行脚本(Run)",
         "icon": "play.png",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.runOnDevice",
         "title": "在指定设备运行脚本(Run On Device)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.stop",
         "title": "停止当前脚本(Stop)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.stopAll",
         "title": "停止所有脚本(Stop All)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.rerun",
         "title": "重新运行(Rerun)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.save",
         "title": "保存到所有设备(Save)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.saveToDevice",
         "title": "保存到指定设备(Save On Device)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.newProject",
         "title": "新建项目(New Project)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.saveProject",
         "title": "保存项目到设备(Save Project)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       },
       {
         "command": "extension.runProject",
         "title": "运行项目(Run Project)",
-        "category": "Auto.js"
+        "category": "Auto.js autoxjs"
       }
     ],
     "keybindings": [
