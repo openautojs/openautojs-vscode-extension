@@ -103,6 +103,6 @@
 
 ### For more information
 
-* [Github repo](https://github.com/kkevsekk1/AutoX)
+* [Github repo](https://github.com/kkevsekk1/Auto.js-VSCode-Extension)
 
 **Enjoy!**
