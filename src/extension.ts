@@ -3,17 +3,34 @@ import * as vscode from 'vscode';
 import { AutoJsDebugServer, Device } from './autojs-debug';
 import { ProjectTemplate, Project } from './project';
 import * as fs from 'fs'
+import * as path from "path";
 
-var server = new AutoJsDebugServer(9317);
-var recentDevice = null;
+let server = new AutoJsDebugServer(9317);
+let recentDevice = null;
 server
   .on('connect', () => {
-    var servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
-    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`);
+    let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
+    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then((result) => {
+      let url = "ws://" + server.getIPs()[0] + ":" + server.getPort()
+      console.log("using qr code: " + url)
+      vscode.commands.executeCommand("extension.showQrCode")
+    });
+  })
+  .on('disconnect', () => {
+    vscode.window.showInformationMessage('Auto.js Server stopped');
+  })
+  .on('adb:tracking_started', () => {
+    vscode.window.showInformationMessage(`ADB: Tracking started`);
+  })
+  .on('adb:tracking_stopped', () => {
+    vscode.window.showInformationMessage(`ADB: Tracking stopped`);
+  })
+  .on('adb:tracking_error', () => {
+    vscode.window.showInformationMessage(`ADB: Tracking error`);
   })
   .on('new_device', (device: Device) => {
-    var messageShown = false;
-    var showMessage = () => {
+    let messageShown = false;
+    let showMessage = () => {
       if (messageShown)
         return;
       vscode.window.showInformationMessage('New device attached: ' + device);
@@ -22,7 +39,8 @@ server
     setTimeout(showMessage, 1000);
     device.on('data:device_name', showMessage);
     // device.send("hello","打开连接");
-  }).on('cmd', (cmd: String, url: String) => {
+  })
+  .on('cmd', (cmd: String, url: String) => {
     switch (cmd) {
       case "save":
         extension.saveProject(url);
@@ -44,7 +62,86 @@ server
 
 class Extension {
   private documentViewPanel: any = undefined;
+  private qrCodeViewPanel: any = undefined;
   private documentCache: Map<string, string> = new Map<string, string>();
+  private extensionPath: string
+
+  constructor(path: string) {
+    this.extensionPath = path
+  }
+
+  showServerAddress() {
+    let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
+    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`)
+  }
+
+  showQrCode() {
+    let ips = server.getIPs()
+    if (ips.length == 1) {
+      this.showQrcodeWebview(ips[0])
+    } else {
+      vscode.window.showQuickPick(ips)
+        .then(ip => {
+          this.showQrcodeWebview(ip)
+        });
+    }
+
+  }
+
+  private showQrcodeWebview(ip: string) {
+    let url = `ws://${ip}:${server.getPort()}`
+    if (!this.qrCodeViewPanel) {
+      this.qrCodeViewPanel = vscode.window.createWebviewPanel(
+        'Qr code',
+        "Qr code",
+        vscode.ViewColumn.Beside,
+        {
+          enableScripts: true,
+        }
+      );
+    }
+    this.qrCodeViewPanel.webview.html = this.getQrCodeHtml(url)
+  }
+
+  private getQrCodeHtml(text: string): string {
+    const icon = this.getVscodeResourceUrl("logo.png")
+    const qrcodejs = this.getVscodeResourceUrl("src/qrcode.js")
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="qrcode"></div>
+    <script src="${qrcodejs}"></script>
+    <script type="text/javascript">
+        new QRCode(document.getElementById("qrcode"), {
+            width: 200,
+            height: 200,
+            curtainWidth: 220,
+            curtainHeight: 220,
+            qrcodeOffsetX: 10,
+            qrcodeOffsetY: 10,
+            curtainBgColor: "white",
+            text: "${text}",
+            iconSrc: "${icon}",
+            iconRadius: 10
+        }
+        )
+    </script>
+</body>
+</html>`
+  }
+
+  private getVscodeResourceUrl(relativePath: string): string {
+    return vscode.Uri.file(
+      path.join(this.extensionPath, relativePath)
+    ).with({ scheme: 'vscode-resource' });
+  }
+
   openDocument() {
     if (this.documentViewPanel) {
       this.documentViewPanel.reveal((vscode.ViewColumn as any).Beside);
@@ -60,7 +157,8 @@ class Extension {
         // 其它webview选项
         {
           // Enable scripts in the webview
-          enableScripts: true
+          enableScripts: true,
+          retainContextWhenHidden: true, // webview被隐藏时保持状态，避免被重置
         }
       );
       // Handle messages from the webview
@@ -128,12 +226,30 @@ class Extension {
 
   stopServer() {
     server.disconnect();
-    vscode.window.showInformationMessage('Auto.js server stopped');
+  }
+
+  startTrackADBDevices() {
+    server.trackADBDevices()
+  }
+
+  stopTrackADBDevices() {
+    server.stopTrackADBDevices()
+  }
+
+  startAllServer() {
+    server.listen()
+    server.trackADBDevices()
+  }
+
+  stopAllServer() {
+    server.disconnect()
+    server.stopTrackADBDevices()
   }
 
   run(url?) {
     this.runOrRerun('run', url);
   }
+
   stop() {
     server.sendCommand('stop', {
       'id': vscode.window.activeTextEditor.document.fileName,
@@ -198,14 +314,11 @@ class Extension {
   }
   runOn(target: AutoJsDebugServer | Device) {
     let editor = vscode.window.activeTextEditor;
-    if (false) {
-    } else {
-      target.sendCommand('run', {
-        'id': editor.document.fileName,
-        'name': editor.document.fileName,
-        'script': editor.document.getText()
-      })
-    }
+    target.sendCommand('run', {
+      'id': editor.document.fileName,
+      'name': editor.document.fileName,
+      'script': editor.document.getText()
+    })
 
   }
 
@@ -219,7 +332,7 @@ class Extension {
   saveTo(target: AutoJsDebugServer | Device, url?) {
 
     let text = "";
-    let filename = "";
+    let filename: string;
     if (null != url) {
       let uri = vscode.Uri.parse(url);
       filename = uri.fsPath;
@@ -297,12 +410,14 @@ class Extension {
 
 
 let _context: any;
-const commands = ['openDocument', 'startServer', 'stopServer', 'run', 'runOnDevice', 'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject',
-  'runProject', 'saveProject'];
-let extension = new Extension();
+const commands = ['startAllServer', 'stopAllServer', 'startServer', 'stopServer', 'startTrackADBDevices',
+  'stopTrackADBDevices', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
+  'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject', 'runProject', 'saveProject'];
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('extension "auto-js-vscodeext-fixed" is now active.');
+  let path = context.extensionPath
+  let extension = new Extension(path);
+  console.log('extension "Autox.js-VSCode-Extension " is now active.');
   commands.forEach((command) => {
     let action: Function = extension[command];
     context.subscriptions.push(vscode.commands.registerCommand('extension.' + command, action.bind(extension)));

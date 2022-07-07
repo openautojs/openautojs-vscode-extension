@@ -6,6 +6,8 @@ import * as url from 'url';
 import * as fs from 'fs'
 import { Project, ProjectObserser } from './project';
 import * as vscode from "vscode";
+import Adb, { DeviceClient} from '@devicefarmer/adbkit';
+import Tracker from '@devicefarmer/adbkit/dist/src/adb/tracker';
 
 const DEBUG = false;
 
@@ -20,21 +22,24 @@ const HANDSHAKE_TIMEOUT = 10 * 1000;
 
 export class Device extends EventEmitter {
   public name: string;
+  public address: string;
   private connection: ws.connection;
   private attached: boolean = false;
   public projectObserser: ProjectObserser;
 
-  constructor(connection: ws.connection) {
+  constructor(connection: ws.connection, address: string) {
     super();
+    this.address = address
     this.connection = connection;
     this.read(this.connection);
     this.on('data:hello', data => {
       logDebug("on client hello: ", data);
       this.attached = true;
       this.name = data['device_name'];
-      this.send("hello", {
-        "server_version": 2
-      });
+      let message_id = `${Date.now()}_${Math.random()}`;
+      var returnData = JSON.stringify({ message_id, data: "连接成功", debug: true, type: 'hello' })
+      logDebug("返回消息：", returnData)
+      this.connection.sendUTF(returnData);
       this.emit("attach", this);
     });
     setTimeout(() => {
@@ -79,13 +84,10 @@ export class Device extends EventEmitter {
   }
 
   public toString = (): string => {
-    if (!this.connection) {
-      return `${this.name}[Disconnected]`
-    }
     if (!this.name) {
-      return `Device (${this.connection.remoteAddress})`;
+      return `Device (${this.address})`;
     }
-    return `Device ${this.name}(${this.connection.remoteAddress})`;
+    return `Device ${this.name}(${this.address})`;
   }
 
   private read(connection: ws.connection) {
@@ -94,11 +96,6 @@ export class Device extends EventEmitter {
       if (message.type == 'utf8') {
         try {
           let json = JSON.parse(message.utf8Data);
-          if (json.type == "hello") {
-            logDebug("返回消息")
-            let message_id = `${Date.now()}_${Math.random()}`;
-            this.connection.sendUTF(JSON.stringify({ message_id, data: "连接成功", debug: true, type: 'hello' }));
-          }
           logDebug("json: ", json);
           this.emit('message', json);
           this.emit('data:' + json['type'], json['data']);
@@ -118,6 +115,8 @@ export class Device extends EventEmitter {
 
 export class AutoJsDebugServer extends EventEmitter {
   private httpServer: http.Server;
+  private adbClient = Adb.createClient()
+  private tracker: Tracker
   private port: number;
   public devices: Array<Device> = [];
   public project: Project = null;
@@ -150,22 +149,45 @@ export class AutoJsDebugServer extends EventEmitter {
     });
     var wsServer = new ws.server({ httpServer: this.httpServer });
     wsServer.on('request', request => {
-      let connection = this.openConnection(request);
+      let connection = request.accept();
       if (!connection) {
         return;
       }
-      let device = new Device(connection);
-      logDebug(connection.state, "--->status")
-      device.on("attach", (device) => {
-        this.attachDevice(device);
-        this.emit('new_device', device);
-        let logChannel = this.newLogChannel(device);
-        logChannel.appendLine(`设备已连接：${device}`);
-      });
+      this.newDevice(connection, connection.remoteAddress)
     })
   }
-  openConnection(request: ws.request): ws.connection {
-    return request.accept();
+
+  private newDevice(connection: ws.connection, address: string) {
+    let device = new Device(connection, address);
+    logDebug(connection.state, "--->status")
+    device.on("attach", (device) => {
+      this.attachDevice(device);
+      this.emit('new_device', device);
+      let logChannel = this.newLogChannel(device);
+      logChannel.appendLine(`Device connected: ${device}`);
+    })
+      ;
+  }
+
+  private connectAutoxjsByADB(port: Number, deviceId: string) {
+    let autoJsDebugServer = this
+    let url = `ws://localhost:${port}/`
+
+    var client = new ws.client();
+
+    client.on('connectFailed', function (error) {
+      let err = 'Connect Error: ' + error.toString()
+      console.log(err);
+      vscode.window.showInformationMessage(err)
+    });
+
+    client.on('connect', function (connection) {
+      console.log("connected to " + url)
+      autoJsDebugServer.newDevice(connection, "ADB: " + deviceId)
+    });
+
+    //下面不能加'echo-protocol'，否则会报Can`t connect due to "Sec-WebSocket-Protocol header"的错。因为服务器没有返回对应协议规定的信息
+    client.connect(url); //, 'echo-protocol');
   }
 
   listen(): void {
@@ -178,6 +200,56 @@ export class AutoJsDebugServer extends EventEmitter {
       console.log(`server listening on ${localAddress}:${address.port} / ${address.address}:${address.port}`);
       this.emit("connect");
     });
+  }
+
+  async trackADBDevices() {
+    let thisServer = this
+    let devices = await thisServer.adbClient.listDevices()
+    for (let device0 of devices) {
+      const device = thisServer.adbClient.getDevice(device0.id)
+      await thisServer.connectDevice(device, device0.id)
+    }
+    try {
+      let tracker = await thisServer.adbClient.trackDevices()
+      this.tracker = tracker
+      tracker.on('add', async function (device0) {
+        console.log("adb device " + device0.id + " added")
+        const device = thisServer.adbClient.getDevice(device0.id)
+        await device.waitForDevice()
+        await thisServer.connectDevice(device, device0.id)
+      })
+      tracker.on('remove', function (device) {
+        console.log("adb device " + device.id + " removed")
+      })
+      tracker.on('end', function () {
+        console.log('ADB Tracking stopped')
+        thisServer.emit("adb:tracking_stopped")
+      })
+    } catch (err) {
+      thisServer.emit("adb:tracking_error")
+      console.error('ADB error: ', err.stack)
+    }
+
+    this.emit("adb:tracking_started");
+  }
+
+  private async connectDevice(device: DeviceClient, id: string) {
+    let forwarded = await device.forward(`tcp:0`, `tcp:9317`)
+    if (forwarded) {
+      let forwards = await device.listForwards()
+      if (forwards.length > 0) {
+        let forward = forwards[0]
+        console.log(`forward ${id}: ${forwards.toString()}`)
+        let port = Number(forward.local.replace("tcp:", ""))
+        this.connectAutoxjsByADB(port, id)
+      }
+    }
+  }
+
+  stopTrackADBDevices() {
+    if (this.tracker) {
+      this.tracker.end()
+    }
   }
 
   send(type: string, data: any): void {
@@ -280,7 +352,8 @@ export class AutoJsDebugServer extends EventEmitter {
   private detachDevice(device: Device): void {
     this.devices.splice(this.devices.indexOf(device), 1);
     console.log("detachDevice: " + device);
-    this.getLogChannel(device).appendLine(`设备已断开：${device}`);
+    vscode.window.showInformationMessage(`Device disconnected: ${device}`)
+    this.getLogChannel(device).appendLine(`Device disconnected: ${device}`);
   }
 
   /** 创建设备日志打印通道 */

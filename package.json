@@ -2,7 +2,7 @@
   "name": "auto-js-vsce-fixed",
   "displayName": "Auto.js-VSCodeExt-Fixed",
   "description": "用于在pc上vscode中开发autoxjs的自动化脚本的插件。兼容autojs 和autoxjs 修复一些bug，主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成",
-  "version": "1.101.0",
+  "version": "1.2.0",
   "publisher": "aaroncheng",
   "icon": "logo.png",
   "repository": {
@@ -16,6 +16,12 @@
     "Other"
   ],
   "activationEvents": [
+    "onCommand:extension.startAllServer",
+    "onCommand:extension.stopAllServer",
+    "onCommand:extension.startTrackADBDevices",
+    "onCommand:extension.stopTrackADBDevices",
+    "onCommand:extension.showQrCode",
+    "onCommand:extension.showServerAddress",
     "onCommand:extension.openDocument",
     "onCommand:extension.startServer",
     "onCommand:extension.stopServer",
@@ -81,6 +87,26 @@
         "category": "Auto.js autoxjs"
       },
       {
+        "command": "extension.showQrCode",
+        "title": "显示服务端二维码(Show qr code)",
+        "category": "Auto.js autoxjs"
+      },
+      {
+        "command": "extension.showServerAddress",
+        "title": "显示服务端ip地址(Show server address)",
+        "category": "Auto.js autoxjs"
+      },
+      {
+        "command": "extension.startAllServer",
+        "title": "开启服务并监听ADB设备(Start all server), 如有多个同类插件，请禁用其他或本插件",
+        "category": "Auto.js autoxjs"
+      },
+      {
+        "command": "extension.stopAllServer",
+        "title": "停止服务并停止监听ADB设备(Stop all server)",
+        "category": "Auto.js autoxjs"
+      },
+      {
         "command": "extension.startServer",
         "title": "开启服务(Start Server), 如有多个同类插件，请禁用其他或本插件",
         "category": "Auto.js autoxjs"
@@ -88,6 +114,16 @@
       {
         "command": "extension.stopServer",
         "title": "停止服务(Stop Server)",
+        "category": "Auto.js autoxjs"
+      },
+      {
+        "command": "extension.startTrackADBDevices",
+        "title": "开始监听ADB设备(Start track adb devices)",
+        "category": "Auto.js autoxjs"
+      },
+      {
+        "command": "extension.stopTrackADBDevices",
+        "title": "停止监听ADB设备(Stop track adb devices)",
         "category": "Auto.js autoxjs"
       },
       {
@@ -195,15 +231,17 @@
     "@types/mocha": "^2.2.42",
     "@types/node": "^7.0.43",
     "typescript": "^2.5.3",
-    "vscode": "^1.1.5"
+    "vscode": "^0.9.9"
   },
   "dependencies": {
+    "@devicefarmer/adbkit": "^3.2.3",
     "@types/archiver": "^2.1.2",
     "@types/jszip": "^3.1.4",
     "@types/stream-buffers": "^3.0.2",
     "@types/walk": "^2.3.0",
     "@types/websocket": "^0.0.40",
     "archiver": "^3.0.0",
+    "bluebird": "^3.7.2",
     "jszip": "^3.1.5",
     "stream-buffers": "^3.0.2",
     "walk": "^2.3.14",
