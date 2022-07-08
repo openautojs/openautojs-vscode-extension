@@ -99,6 +99,12 @@ class Extension {
           enableScripts: true,
         }
       );
+      this.qrCodeViewPanel.onDidDispose(() => {
+        this.qrCodeViewPanel = undefined;
+      },
+        undefined,
+        _context.subscriptions
+      );
     }
     this.qrCodeViewPanel.webview.html = this.getQrCodeHtml(url)
   }

@@ -166,7 +166,6 @@ export class AutoJsDebugServer extends EventEmitter {
       let logChannel = this.newLogChannel(device);
       logChannel.appendLine(`Device connected: ${device}`);
     })
-      ;
   }
 
   private connectAutoxjsByADB(port: Number, deviceId: string) {
