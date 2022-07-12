@@ -10,9 +10,7 @@ let recentDevice = null;
 server
   .on('connect', () => {
     let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
-    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then((result) => {
-      let url = "ws://" + server.getIPs()[0] + ":" + server.getPort()
-      console.log("using qr code: " + url)
+    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then(() => {
       vscode.commands.executeCommand("extension.showQrCode")
     });
   })
@@ -64,11 +62,6 @@ class Extension {
   private documentViewPanel: any = undefined;
   private qrCodeViewPanel: any = undefined;
   private documentCache: Map<string, string> = new Map<string, string>();
-  private extensionPath: string
-
-  constructor(path: string) {
-    this.extensionPath = path
-  }
 
   showServerAddress() {
     let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
@@ -144,8 +137,8 @@ class Extension {
 
   private getVscodeResourceUrl(relativePath: string): string {
     return vscode.Uri.file(
-      path.join(this.extensionPath, relativePath)
-    ).with({ scheme: 'vscode-resource' });
+      path.join(_context.extensionPath, relativePath)
+    ).with({ scheme: 'vscode-resource' }).toString();
   }
 
   openDocument() {
@@ -414,15 +407,13 @@ class Extension {
   }
 };
 
-
+let extension = new Extension();
 let _context: any;
 const commands = ['startAllServer', 'stopAllServer', 'startServer', 'stopServer', 'startTrackADBDevices',
   'stopTrackADBDevices', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
   'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject', 'runProject', 'saveProject'];
 
 export function activate(context: vscode.ExtensionContext) {
-  let path = context.extensionPath
-  let extension = new Extension(path);
   console.log('extension "Autox.js-VSCode-Extension " is now active.');
   commands.forEach((command) => {
     let action: Function = extension[command];
