@@ -2,6 +2,7 @@
 import * as vscode from 'vscode';
 import { AutoJsDebugServer, Device } from './autojs-debug';
 import { ProjectTemplate, Project } from './project';
+
 import * as fs from 'fs'
 import * as path from "path";
 
@@ -41,6 +42,7 @@ server
     // device.send("hello","打开连接");
   })
   .on('cmd', (cmd: String, url: String) => {
+    let extension = new Extension("");
     switch (cmd) {
       case "save":
         extension.saveProject(url);
@@ -145,7 +147,7 @@ class Extension {
   private getVscodeResourceUrl(relativePath: string): string {
     return vscode.Uri.file(
       path.join(this.extensionPath, relativePath)
-    ).with({ scheme: 'vscode-resource' });
+    ).with({ scheme: 'vscode-resource' }).toString();
   }
 
   openDocument() {

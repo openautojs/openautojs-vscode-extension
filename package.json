@@ -10,7 +10,7 @@
     "url": "https://github.com/kkevsekk1/Auto.js-VSCode-Extension"
   },
   "engines": {
-    "vscode": "^1.17.0"
+    "vscode": "^1.69.0"
   },
   "categories": [
     "Other"
@@ -217,21 +217,23 @@
       }
     ]
   },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test",
-    "install": "npm install",
-    "package": "vsce package",
-    "publish": "vsce publish"
-  },
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js"
+	},
   "devDependencies": {
-    "@types/mocha": "^2.2.42",
-    "@types/node": "^7.0.43",
-    "typescript": "^2.5.3",
-    "vscode": "^0.9.9"
+    "@types/vscode": "^1.69.0",
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^9.1.1",
+		"@types/node": "16.x",
+		"glob": "^8.0.3",
+		"mocha": "^10.0.0",
+		"typescript": "^4.7.4",
+		"@vscode/test-electron": "^2.1.5"
   },
   "dependencies": {
     "@devicefarmer/adbkit": "^3.2.3",

@@ -2,7 +2,7 @@ import { Uri } from "vscode";
 import * as vscode from "vscode";
 import * as fs from "fs";
 import { FileObserver, FileFilter } from "./diff";
-import * as archiver from 'archiver'
+import archiver from 'archiver'
 import * as path from 'path'
 import * as cryto from 'crypto'
 import * as walk from 'walk'
