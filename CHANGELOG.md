@@ -9,8 +9,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 优化以下特性：
 
-- 增加adb方式进行连接 
+-  [wilinz](https://github.com/wilinz) 增加adb方式进行连接、二维码等
 - 修改一些语法错误问题
+- 不能自动运行的bug
 
 
 
