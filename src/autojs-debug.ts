@@ -6,7 +6,7 @@ import * as url from 'url';
 import * as fs from 'fs'
 import { Project, ProjectObserser } from './project';
 import * as vscode from "vscode";
-import Adb, { DeviceClient} from '@devicefarmer/adbkit';
+import Adb, { DeviceClient } from '@devicefarmer/adbkit';
 import Tracker from '@devicefarmer/adbkit/dist/src/adb/tracker';
 
 const DEBUG = false;
@@ -190,11 +190,16 @@ export class AutoJsDebugServer extends EventEmitter {
   }
 
   listen(): void {
+    if (this.httpServer) {
+      this.emit("connect");
+      return
+    }
     this.httpServer.on('error', (e) => {
+      this.httpServer = undefined
       console.error('server error: ', e);
     });
     this.httpServer.listen(this.port, '0.0.0.0', () => {
-     const address:any = this.httpServer.address();
+      const address: any = this.httpServer.address();
       var localAddress = this.getIPAddress();
       console.log(`server listening on ${localAddress}:${address.port} / ${address.address}:${address.port}`);
       this.emit("connect");
@@ -203,6 +208,10 @@ export class AutoJsDebugServer extends EventEmitter {
 
   async trackADBDevices() {
     let thisServer = this
+    if (this.tracker) {
+      this.emit("adb:tracking_started");
+      return
+    }
     let devices = await thisServer.adbClient.listDevices()
     for (let device0 of devices) {
       const device = thisServer.adbClient.getDevice(device0.id)
@@ -225,6 +234,7 @@ export class AutoJsDebugServer extends EventEmitter {
         thisServer.emit("adb:tracking_stopped")
       })
     } catch (err) {
+      this.tracker = undefined
       thisServer.emit("adb:tracking_error")
       console.error('ADB error: ', err.stack)
     }
@@ -248,6 +258,7 @@ export class AutoJsDebugServer extends EventEmitter {
   stopTrackADBDevices() {
     if (this.tracker) {
       this.tracker.end()
+      this.tracker = undefined
     }
   }
 
@@ -295,6 +306,7 @@ export class AutoJsDebugServer extends EventEmitter {
 
   disconnect(): void {
     this.httpServer.close();
+    this.httpServer = undefined
     this.emit("disconnect");
     this.logChannels.forEach(channel => {
       channel.dispose();
