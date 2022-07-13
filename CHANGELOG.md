@@ -4,6 +4,16 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+
+### 1.103.0
+
+优化以下特性：
+
+- 增加adb方式进行连接 
+- 修改一些语法错误问题
+
+
+
 ### 1.101.0
 
 优化以下特性：
