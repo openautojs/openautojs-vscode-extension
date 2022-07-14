@@ -1,8 +1,8 @@
 {
   "name": "auto-js-vsce-fixed",
-  "displayName": "Autox.js-VSCodeExt",
-  "description": "用于在pc上vscode中开发autoxjs的自动化脚本的插件。兼容autojs 和autoxjs 修复一些bug，主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成",
-  "version": "1.104.0",
+  "displayName": "Auto.js-AutoX.js-VSCodeExt",
+  "description": "用于在pc上vscode中开发autoxjs的自动化脚本的插件。兼容autojs 和autoxjs,增加功能：usb方式adb进行连接; 右键【文件夹】保存项目到设备;右键【js文件】运行;js文件中点击右上角运行; 结合webpack自动编译，js自动运行到手机",
+  "version": "1.105.0",
   "publisher": "aaroncheng",
   "icon": "logo.png",
   "repository": {
