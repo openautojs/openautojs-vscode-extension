@@ -11,18 +11,27 @@ let recentDevice = null;
 server
   .on('connect', () => {
     let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
-    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then((result) => {
-      vscode.commands.executeCommand("extension.showQrCode")
+    let showQrcode = "Show QR code"
+    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, showQrcode).then((result) => {
+      if (result === showQrcode) {
+        vscode.commands.executeCommand("extension.showQrCode")
+      }
     });
+  })
+  .on('connected', () => {
+    vscode.window.showInformationMessage('Auto.js Server already running');
   })
   .on('disconnect', () => {
     vscode.window.showInformationMessage('Auto.js Server stopped');
   })
-  .on('adb:tracking_started', () => {
-    vscode.window.showInformationMessage(`ADB: Tracking started`);
+  .on('adb:tracking_start', () => {
+    vscode.window.showInformationMessage(`ADB: Tracking start`);
   })
-  .on('adb:tracking_stopped', () => {
-    vscode.window.showInformationMessage(`ADB: Tracking stopped`);
+  .on('adb:tracking_started', () => {
+    vscode.window.showInformationMessage(`ADB: Tracking already running`);
+  })
+  .on('adb:tracking_stop', () => {
+    vscode.window.showInformationMessage(`ADB: Tracking stop`);
   })
   .on('adb:tracking_error', () => {
     vscode.window.showInformationMessage(`ADB: Tracking error`);

@@ -114,6 +114,7 @@ export class Device extends EventEmitter {
 }
 
 export class AutoJsDebugServer extends EventEmitter {
+  public isHttpServerStarted = false
   private httpServer: http.Server;
   private adbClient = Adb.createClient()
   private tracker: Tracker
@@ -190,15 +191,16 @@ export class AutoJsDebugServer extends EventEmitter {
   }
 
   listen(): void {
-    if (this.httpServer) {
-      this.emit("connect");
+    if (this.isHttpServerStarted) {
+      this.emit("connected");
       return
     }
     this.httpServer.on('error', (e) => {
-      this.httpServer = undefined
+      this.isHttpServerStarted = false
       console.error('server error: ', e);
     });
     this.httpServer.listen(this.port, '0.0.0.0', () => {
+      this.isHttpServerStarted = true
       const address: any = this.httpServer.address();
       var localAddress = this.getIPAddress();
       console.log(`server listening on ${localAddress}:${address.port} / ${address.address}:${address.port}`);
@@ -230,8 +232,9 @@ export class AutoJsDebugServer extends EventEmitter {
         console.log("adb device " + device.id + " removed")
       })
       tracker.on('end', function () {
+        tracker=undefined
         console.log('ADB Tracking stopped')
-        thisServer.emit("adb:tracking_stopped")
+        thisServer.emit("adb:tracking_stop")
       })
     } catch (err) {
       this.tracker = undefined
@@ -239,7 +242,7 @@ export class AutoJsDebugServer extends EventEmitter {
       console.error('ADB error: ', err.stack)
     }
 
-    this.emit("adb:tracking_started");
+    this.emit("adb:tracking_start");
   }
 
   private async connectDevice(device: DeviceClient, id: string) {
@@ -258,7 +261,6 @@ export class AutoJsDebugServer extends EventEmitter {
   stopTrackADBDevices() {
     if (this.tracker) {
       this.tracker.end()
-      this.tracker = undefined
     }
   }
 
@@ -306,7 +308,7 @@ export class AutoJsDebugServer extends EventEmitter {
 
   disconnect(): void {
     this.httpServer.close();
-    this.httpServer = undefined
+    this.isHttpServerStarted = false
     this.emit("disconnect");
     this.logChannels.forEach(channel => {
       channel.dispose();
