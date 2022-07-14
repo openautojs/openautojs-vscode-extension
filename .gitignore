@@ -1,7 +1,6 @@
 out
 node_modules
 .vscode-test/
-.vsix
-
+.idea
 token.txt
-auto-js-vscodeext-fixed-0.3.9.vsix
+*.vsix

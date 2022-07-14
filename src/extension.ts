@@ -11,9 +11,7 @@ let recentDevice = null;
 server
   .on('connect', () => {
     let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
-    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then((result) => {
-      let url = "ws://" + server.getIPs()[0] + ":" + server.getPort()
-      console.log("using qr code: " + url)
+    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then(() => {
       vscode.commands.executeCommand("extension.showQrCode")
     });
   })
@@ -42,7 +40,6 @@ server
     // device.send("hello","打开连接");
   })
   .on('cmd', (cmd: String, url: String) => {
-    let extension = new Extension("");
     switch (cmd) {
       case "save":
         extension.saveProject(url);
@@ -66,11 +63,6 @@ class Extension {
   private documentViewPanel: any = undefined;
   private qrCodeViewPanel: any = undefined;
   private documentCache: Map<string, string> = new Map<string, string>();
-  private extensionPath: string
-
-  constructor(path: string) {
-    this.extensionPath = path
-  }
 
   showServerAddress() {
     let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
@@ -108,19 +100,19 @@ class Extension {
         _context.subscriptions
       );
     }
-    this.qrCodeViewPanel.webview.html = this.getQrCodeHtml(url)
+    this.qrCodeViewPanel.webview.html = Extension.getQrCodeHtml(url)
   }
 
-  private getQrCodeHtml(text: string): string {
-    const icon = this.getVscodeResourceUrl("logo.png")
-    const qrcodejs = this.getVscodeResourceUrl("src/qrcode.js")
+  private static getQrCodeHtml(text: string): string {
+    const icon = Extension.getVscodeResourceUrl("logo.png")
+    const qrcodejs = Extension.getVscodeResourceUrl("assets/qrcode.js")
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>QR CODE</title>
 </head>
 <body>
     <div id="qrcode"></div>
@@ -144,9 +136,9 @@ class Extension {
 </html>`
   }
 
-  private getVscodeResourceUrl(relativePath: string): string {
+  private static getVscodeResourceUrl(relativePath: string): string {
     return vscode.Uri.file(
-      path.join(this.extensionPath, relativePath)
+      path.join(_context.extensionPath, relativePath)
     ).with({ scheme: 'vscode-resource' }).toString();
   }
 
@@ -418,13 +410,12 @@ class Extension {
 
 
 let _context: any;
+let extension = new Extension();
 const commands = ['startAllServer', 'stopAllServer', 'startServer', 'stopServer', 'startTrackADBDevices',
   'stopTrackADBDevices', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
   'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject', 'runProject', 'saveProject'];
 
 export function activate(context: vscode.ExtensionContext) {
-  let path = context.extensionPath
-  let extension = new Extension(path);
   console.log('extension "Autox.js-VSCode-Extension " is now active.');
   commands.forEach((command) => {
     let action: Function = extension[command];

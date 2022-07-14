@@ -1,4 +1,4 @@
-# Auto.js-VSCodeExt-Fixed
+# Autox.js-VSCodeExt
 
 ## 插件背景
 基于[Auto.js-VSCodeExt-Fixed，0.3.8](https://github.com/710850609/Auto.js-VSCode-Extension)版本开发， 主要添加右键【文件夹】保存项目到设备,右键【js文件】运行，js文件中 点击右上角运行脚本，结合webpack，编译打包一气呵成，插件里还有几个功能（如保存普通资源脚本目录等）是以前的代码无法快速实现的。可能修改安卓apk。详细信息请看change log
@@ -13,7 +13,7 @@
 
 ## Install
 
-在VS Code中菜单"查看"->"扩展"->输入"Autox.js"搜索，即可看到"Autox.js-VSCodeExt-Fixed"插件，安装即可。插件的更新也可以在这里更新。
+在VS Code中菜单"查看"->"扩展"->输入"Autox.js"搜索，即可看到"Autox.js-VSCodeExt"插件，安装即可。插件的更新也可以在这里更新。
 
 ## Features
 
