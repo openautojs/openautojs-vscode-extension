@@ -4,6 +4,12 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### 1.107.0
+
+优化以下特性：
+
+-  [wilinz](https://github.com/wilinz)  修改连接不上的bug
+
 
 ### 1.105.0
 
