@@ -11,7 +11,7 @@ let recentDevice = null;
 server
   .on('connect', () => {
     let servers = server.getIPs().join(":" + server.getPort() + " or ") + ":" + server.getPort();
-    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then(() => {
+    vscode.window.showInformationMessage(`Auto.js Autox.js \r\n server running on ${servers}`, "Show QR code").then((result) => {
       vscode.commands.executeCommand("extension.showQrCode")
     });
   })
