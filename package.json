@@ -20,6 +20,8 @@
     "onCommand:extension.stopAllServer",
     "onCommand:extension.startTrackADBDevices",
     "onCommand:extension.stopTrackADBDevices",
+    "onCommand:extension.manuallyConnectADB",
+    "onCommand:extension.manuallyDisconnect",
     "onCommand:extension.showQrCode",
     "onCommand:extension.showServerAddress",
     "onCommand:extension.openDocument",
@@ -124,6 +126,16 @@
       {
         "command": "extension.stopTrackADBDevices",
         "title": "停止监听ADB设备(Stop track adb devices)",
+        "category": "Auto.js autoxjs"
+      },
+      {
+        "command": "extension.manuallyConnectADB",
+        "title": "手动连接ADB设备(Manually connect adb device)",
+        "category": "Auto.js autoxjs"
+      },
+      {
+        "command": "extension.manuallyDisconnect",
+        "title": "手动关闭设备连接(Manually disconnect device)",
         "category": "Auto.js autoxjs"
       },
       {

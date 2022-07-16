@@ -255,6 +255,28 @@ class Extension {
     server.stopTrackADBDevices()
   }
 
+  async manuallyConnectADB() {
+    let devices = await server.listADBDevices()
+    let deviceIds = devices.map((device) => { return device.id })
+    for (let device0 of devices) {
+      vscode.window.showQuickPick(deviceIds)
+        .then(id => {
+          server.connectDevice(id)
+        });
+    }
+  }
+
+  manuallyDisconnect() {
+    let devices = server.devices
+    let deviceIds = devices.map((device) => { return device.id })
+    for (let device0 of devices) {
+      vscode.window.showQuickPick(deviceIds)
+        .then(id => {
+          server.getDeviceById(id).close()
+        });
+    }
+  }
+
   run(url?) {
     this.runOrRerun('run', url);
   }
@@ -421,7 +443,7 @@ class Extension {
 let _context: any;
 let extension = new Extension();
 const commands = ['startAllServer', 'stopAllServer', 'startServer', 'stopServer', 'startTrackADBDevices',
-  'stopTrackADBDevices', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
+  'stopTrackADBDevices', 'manuallyConnectADB', 'manuallyDisconnect', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
   'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject', 'runProject', 'saveProject'];
 
 export function activate(context: vscode.ExtensionContext) {
