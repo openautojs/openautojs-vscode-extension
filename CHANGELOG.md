@@ -4,6 +4,17 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+
+
+### 1.108.0
+
+优化以下特性：
+
+- [wilinz](https://github.com/wilinz)  增加手动连接ADB命令和手动关闭连接命令
+
+- [wilinz](https://github.com/wilinz) 修复&优化
+
+
 ### 1.107.0
 
 优化以下特性：
