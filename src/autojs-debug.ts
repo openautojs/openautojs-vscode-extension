@@ -9,6 +9,8 @@ import * as vscode from "vscode";
 import Adb, { DeviceClient, Forward } from '@devicefarmer/adbkit';
 import Tracker from '@devicefarmer/adbkit/dist/src/adb/tracker';
 import ADBDevice from '@devicefarmer/adbkit/dist/src/Device';
+import internal from "stream";
+import buffer from "buffer";
 
 const DEBUG = false;
 
@@ -127,7 +129,7 @@ export class Device extends EventEmitter {
 export class AutoJsDebugServer extends EventEmitter {
   public isHttpServerStarted = false
   private httpServer: http.Server;
-  private adbClient = Adb.createClient()
+  public adbClient = Adb.createClient()
   private tracker: Tracker
   private port: number;
   public devices: Array<Device> = [];
@@ -184,6 +186,12 @@ export class AutoJsDebugServer extends EventEmitter {
       let logChannel = this.newLogChannel(device);
       logChannel.appendLine(`Device connected: ${device}`);
     })
+  }
+
+  async adbShell(device: DeviceClient, command: string): Promise<string> {
+    let duplex: internal.Duplex = await device.shell(command)
+    let brandBuf: buffer.Buffer = await Adb.util.readAll(duplex)
+    return brandBuf.toString()
   }
 
   private connectAutoxjsByADB(port: Number, deviceId: string) {
@@ -290,8 +298,8 @@ export class AutoJsDebugServer extends EventEmitter {
 
   private async listForwards(device: DeviceClient, id: string): Promise<Forward[]> {
     let forwards: Forward[] = await device.listForwards()
-    return forwards.filter((value) => {
-      return value.serial == id
+    return forwards.filter((forward) => {
+      return forward.serial == id && forward.remote == "tcp:9317"
     })
   }
 

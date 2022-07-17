@@ -257,24 +257,27 @@ class Extension {
 
   async manuallyConnectADB() {
     let devices = await server.listADBDevices()
-    let deviceIds = devices.map((device) => { return device.id })
-    for (let device0 of devices) {
-      vscode.window.showQuickPick(deviceIds)
-        .then(id => {
-          server.connectDevice(id)
-        });
-    }
+    let names = await Promise.all(devices.map(async (device) => {
+      let adbDevice = server.adbClient.getDevice(device.id)
+      let brand = await server.adbShell(adbDevice, "getprop ro.product.brand")
+      let model = await server.adbShell(adbDevice, "getprop ro.product.model")
+      return `${brand} ${model}: ${device.id}`
+    }));
+    vscode.window.showQuickPick(names)
+      .then(name => {
+        let device = devices[names.indexOf(name)]
+        server.connectDevice(device.id)
+      });
   }
 
   manuallyDisconnect() {
     let devices = server.devices
-    let deviceIds = devices.map((device) => { return device.id })
-    for (let device0 of devices) {
-      vscode.window.showQuickPick(deviceIds)
-        .then(id => {
-          server.getDeviceById(id).close()
-        });
-    }
+    let names = devices.map((device) => { return device.name + ": " + device.id })
+    vscode.window.showQuickPick(names)
+      .then(name => {
+        let device = devices[names.indexOf(name)]
+        server.getDeviceById(device.id).close()
+      });
   }
 
   run(url?) {
@@ -437,7 +440,7 @@ class Extension {
   saveProject(url?) {
     this.sendProjectCommand("save_project", url);
   }
-};
+}
 
 
 let _context: any;
