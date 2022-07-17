@@ -255,6 +255,31 @@ class Extension {
     server.stopTrackADBDevices()
   }
 
+  async manuallyConnectADB() {
+    let devices = await server.listADBDevices()
+    let names = await Promise.all(devices.map(async (device) => {
+      let adbDevice = server.adbClient.getDevice(device.id)
+      let brand = await server.adbShell(adbDevice, "getprop ro.product.brand")
+      let model = await server.adbShell(adbDevice, "getprop ro.product.model")
+      return `${brand} ${model}: ${device.id}`
+    }));
+    vscode.window.showQuickPick(names)
+      .then(name => {
+        let device = devices[names.indexOf(name)]
+        server.connectDevice(device.id)
+      });
+  }
+
+  manuallyDisconnect() {
+    let devices = server.devices
+    let names = devices.map((device) => { return device.name + ": " + device.id })
+    vscode.window.showQuickPick(names)
+      .then(name => {
+        let device = devices[names.indexOf(name)]
+        server.getDeviceById(device.id).close()
+      });
+  }
+
   run(url?) {
     this.runOrRerun('run', url);
   }
@@ -415,13 +440,13 @@ class Extension {
   saveProject(url?) {
     this.sendProjectCommand("save_project", url);
   }
-};
+}
 
 
 let _context: any;
 let extension = new Extension();
 const commands = ['startAllServer', 'stopAllServer', 'startServer', 'stopServer', 'startTrackADBDevices',
-  'stopTrackADBDevices', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
+  'stopTrackADBDevices', 'manuallyConnectADB', 'manuallyDisconnect', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
   'stop', 'stopAll', 'rerun', 'save', 'saveToDevice', 'newProject', 'runProject', 'saveProject'];
 
 export function activate(context: vscode.ExtensionContext) {

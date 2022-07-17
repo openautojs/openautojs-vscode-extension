@@ -56,6 +56,8 @@
 * 停止服务(Stop Server)： 停止插件服务
 * 开始监听ADB设备(Start track adb devices): 开启后会自动连接ADB设备
 * 停止监听ADB设备(Stop track adb devices)
+* 手动连接ADB设备(Manually connect adb device)
+* 手动关闭设备连接(Manually disconnect device)
 * 打开文档(Open Document)： 打开Auto.js开发文档
 * 显示服务端二维码(Show qr code): 显示服务端二维码，之后可用客户端扫码连接
 * 显示服务端ip地址(Show server address)
