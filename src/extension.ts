@@ -443,7 +443,7 @@ class Extension {
 }
 
 
-let _context: any;
+export let _context: vscode.ExtensionContext;
 let extension = new Extension();
 const commands = ['startAllServer', 'stopAllServer', 'startServer', 'stopServer', 'startTrackADBDevices',
   'stopTrackADBDevices', 'manuallyConnectADB', 'manuallyDisconnect', 'showServerAddress', 'showQrCode', 'openDocument', 'run', 'runOnDevice',
@@ -455,6 +455,8 @@ export function activate(context: vscode.ExtensionContext) {
     let action: Function = extension[command];
     context.subscriptions.push(vscode.commands.registerCommand('extension.' + command, action.bind(extension)));
     _context = context;
+    // @ts-ignore
+    console.log(context.extension.packageJSON.version)
   })
 }
 

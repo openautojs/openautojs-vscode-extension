@@ -4,7 +4,9 @@ All notable changes to the "auto-js-vscodeext-fixed" extension will be documente
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-
+### 1.109.0
+- 添加心跳检测（需要Autox.js 6.2.9 版本以上才会启用）
+- 设备断开连接后关闭日志通道
 
 ### 1.108.0
 

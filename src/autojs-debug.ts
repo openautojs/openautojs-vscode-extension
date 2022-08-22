@@ -11,7 +11,7 @@ import Tracker from '@devicefarmer/adbkit/dist/src/adb/tracker';
 import ADBDevice from '@devicefarmer/adbkit/dist/src/Device';
 import internal from "stream";
 import buffer from "buffer";
-
+import { _context } from "./extension";
 const DEBUG = false;
 
 function logDebug(message?: any, ...optionalParams: any[]) {
@@ -42,11 +42,26 @@ export class Device extends EventEmitter {
       this.attached = true;
       this.name = data['device_name'];
       let message_id = `${Date.now()}_${Math.random()}`;
-      var returnData = JSON.stringify({ message_id, data: "连接成功", debug: true, type: 'hello' })
-      logDebug("返回消息：", returnData)
+      let appVersionCode = data['app_version_code']
+      // @ts-ignore
+      let extensionVersion = _context.extension.packageJSON.version
+      let returnData
+      if (appVersionCode >= 629) {
+        returnData = JSON.stringify({ message_id, data: "ok", version: extensionVersion, debug: DEBUG, type: 'hello' })
+      } else {
+        returnData = JSON.stringify({ message_id, data: "连接成功", debug: DEBUG, type: 'hello' })
+      }
+      logDebug("return data: ", returnData)
       this.connection.sendUTF(returnData);
       this.emit("attach", this);
     });
+    this.on('data:ping', data => {
+      logDebug("on client ping: ", data);
+      let message_id = `${Date.now()}_${Math.random()}`;
+      var returnData = JSON.stringify({ type: 'pong', data: data })
+      logDebug("pong: ", returnData)
+      this.connection.sendUTF(returnData);
+    })
     setTimeout(() => {
       if (!this.attached) {
         console.log("handshake timeout");
@@ -161,7 +176,7 @@ export class AutoJsDebugServer extends EventEmitter {
         response.end();
       }
     });
-    let wsServer = new ws.server({ httpServer: this.httpServer });
+    let wsServer = new ws.server({ httpServer: this.httpServer, keepalive: true, keepaliveInterval: 10000 });
     wsServer.on('request', request => {
       let connection = request.accept();
       if (!connection) {
@@ -180,16 +195,18 @@ export class AutoJsDebugServer extends EventEmitter {
   private newDevice(connection: ws.connection, type: string, id: string) {
     let device = new Device(connection, type, id);
     logDebug(connection.state, "--->status")
-    device.on("attach", (device) => {
-      this.attachDevice(device);
-      this.emit('new_device', device);
-      let logChannel = this.newLogChannel(device);
-      logChannel.appendLine(`Device connected: ${device}`);
-    })
+    device
+      .on("attach", (device) => {
+        this.attachDevice(device);
+        this.emit('new_device', device);
+        let logChannel = this.newLogChannel(device);
+        logChannel.appendLine(`Device connected: ${device}`);
+      })
   }
 
   async adbShell(device: DeviceClient, command: string): Promise<string> {
     let duplex: internal.Duplex = await device.shell(command)
+    // @ts-ignore
     let brandBuf: buffer.Buffer = await Adb.util.readAll(duplex)
     return brandBuf.toString()
   }
@@ -415,17 +432,19 @@ export class AutoJsDebugServer extends EventEmitter {
     this.devices.splice(this.devices.indexOf(device), 1);
     console.log("detachDevice: " + device);
     vscode.window.showInformationMessage(`Device disconnected: ${device}`)
-    this.getLogChannel(device).appendLine(`Device disconnected: ${device}`);
+    var logChannel = this.getLogChannel(device)
+    logChannel.dispose();
+    this.logChannels.delete(device.toString())
   }
 
   /** 创建设备日志打印通道 */
   private newLogChannel(device: Device): vscode.OutputChannel {
-    let channelName = `${device}`;
-    let logChannel = this.logChannels.get(channelName);
-    if (!logChannel) {
-      logChannel = vscode.window.createOutputChannel(channelName);
-      this.logChannels.set(channelName, logChannel);
-    }
+    let channelName = device.toString();
+    // let logChannel = this.logChannels.get(channelName);
+    // if (!logChannel) {
+    let logChannel = vscode.window.createOutputChannel(channelName);
+    this.logChannels.set(channelName, logChannel);
+    // }
     logChannel.show(true);
     // console.log("创建日志通道" + channelName)
     return logChannel;
@@ -433,7 +452,7 @@ export class AutoJsDebugServer extends EventEmitter {
 
   /** 获取设备日志打印通道 */
   private getLogChannel(device: Device): vscode.OutputChannel {
-    let channelName = `${device}`;
+    let channelName = device.toString();
     // console.log("获取日志通道：" + channelName);
     return this.logChannels.get(channelName);
   }
