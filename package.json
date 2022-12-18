@@ -1,13 +1,13 @@
 {
-  "name": "auto-js-vsce-fixed",
-  "displayName": "Auto.js-Autox.js-VSCodeExt",
+  "name": "autoxjs-ext",
+  "displayName": "Autox.js-VSCodeExt",
   "description": "用于在pc上vscode中开发autoxjs的自动化脚本的插件。兼容autojs 和autoxjs,增加功能：usb方式adb进行连接; 右键【文件夹】保存项目到设备;右键【js文件】运行;js文件中点击右上角运行; 结合webpack自动编译，js自动运行到手机",
   "version": "1.110.0",
-  "publisher": "aaroncheng",
+  "publisher": "wilinz",
   "icon": "logo.png",
   "repository": {
     "type": "github",
-    "url": "https://github.com/kkevsekk1/Auto.js-VSCode-Extension"
+    "url": "https://github.com/wilinz/Auto.js-VSCode-Extension"
   },
   "engines": {
     "vscode": "^1.69.0"
@@ -86,108 +86,108 @@
         "command": "extension.openDocument",
         "title": "打开文档(Open Document)",
         "icon": "logo.png",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.showQrCode",
         "title": "显示服务端二维码(Show qr code)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.showServerAddress",
         "title": "显示服务端ip地址(Show server address)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.startAllServer",
         "title": "开启服务并监听ADB设备(Start all server), 如有多个同类插件，请禁用其他或本插件",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.stopAllServer",
         "title": "停止服务并停止监听ADB设备(Stop all server)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.startServer",
         "title": "开启服务(Start Server), 如有多个同类插件，请禁用其他或本插件",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.stopServer",
         "title": "停止服务(Stop Server)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.startTrackADBDevices",
         "title": "开始监听ADB设备(Start track adb devices)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.stopTrackADBDevices",
         "title": "停止监听ADB设备(Stop track adb devices)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.manuallyConnectADB",
         "title": "手动连接ADB设备(Manually connect adb device)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.manuallyDisconnect",
         "title": "手动关闭设备连接(Manually disconnect device)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.run",
         "title": "运行脚本(Run)",
         "icon": "play.png",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.runOnDevice",
         "title": "在指定设备运行脚本(Run On Device)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.stop",
         "title": "停止当前脚本(Stop)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.stopAll",
         "title": "停止所有脚本(Stop All)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.rerun",
         "title": "重新运行(Rerun)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.save",
         "title": "保存到所有设备(Save)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.saveToDevice",
         "title": "保存到指定设备(Save On Device)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.newProject",
         "title": "新建项目(New Project)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.saveProject",
         "title": "保存项目到设备(Save Project)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       },
       {
         "command": "extension.runProject",
         "title": "运行项目(Run Project)",
-        "category": "Auto.js autoxjs"
+        "category": "autoxjs"
       }
     ],
     "keybindings": [
